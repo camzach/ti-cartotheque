@@ -9,6 +9,18 @@ dotenv.config();
 const app = express()
 const port = process.env.PORT || 3000;
 
+// Force HTTPS
+if(process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.protocol !== 'https' && req.header('x-forwarded-proto') !== 'https') {
+      res.redirect(`https://${req.header('host')}${req.url}`);
+    }
+    else {
+      next();
+    }
+  })
+}
+
 const buildPath = path.resolve(__dirname, '../../frontend/dist');
 const indexHtml = path.join(buildPath, 'index.html');
 
