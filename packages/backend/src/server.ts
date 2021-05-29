@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000;
 
 const buildPath = path.resolve(__dirname, '../../frontend/dist');
 const indexHtml = path.join(buildPath, 'index.html');
@@ -17,7 +17,7 @@ app.use(express.static(buildPath));
 // Serve index.html on unmatched routes
 app.get('/', (req, res) => res.sendFile(indexHtml));
 
-const { MONGO_URI='' } = process.env;
+const MONGO_URI = process.env.MONGO_URI || '';
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('connected to mongodb'))
   .catch(() => console.log('mongodb failed to connect'));
