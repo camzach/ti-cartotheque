@@ -2,7 +2,8 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "start": "lerna run build && yarn --cwd packages/backend start"
+    "build": "lerna run build",
+    "start": "yarn --cwd packages/backend start"
   },
   "devDependencies": {
     "lerna": "^4.0.0"
