@@ -17,7 +17,7 @@ function sharedTileStyle(props: { coords: [number, number], mapSize: [number, nu
 }
 
 const BaseTile = styled.div<{ tile: number, coords: [number, number], mapSize: [number, number] }>`
-  background: url(${({ tile }) => `https://github.com/camzach/GalaxyGen/raw/master/Tiles/${tile}.png`});
+  background: url(${({ tile }) => `https://keeganw.github.io/ti4//tiles/ST_${tile}.png`});
   background-size: 100% 100%;
   ${sharedTileStyle}
 `;
@@ -52,6 +52,8 @@ type Props = {
   coords: [number, number]
   mapSize: [number, number]
   onClick?: (coords: [number, number], metaKey: boolean) => void
+  onDragStart?: (coords: [number, number], metaKey: boolean) => void
+  onDragEnter?: (coords: [number, number], metaKey: boolean) => void
 }
 
 export function Tile(props: Props) {
@@ -60,6 +62,8 @@ export function Tile(props: Props) {
     coords,
     mapSize,
     onClick = () => {},
+    onDragStart = () => {},
+    onDragEnter = () => {},
     tileNumber
   } = props;
 
@@ -69,7 +73,14 @@ export function Tile(props: Props) {
 
   return (
     <div
+      draggable
       onClick={handleClick}
+      onDragStart={(e) => {
+        // Hack to hide drag image
+        e.dataTransfer.setDragImage(document.createElement('div'), 0, 0);
+        onDragStart(coords, e.ctrlKey || e.metaKey)
+      }}
+      onDragEnter={(e) => onDragEnter(coords, e.ctrlKey || e.metaKey)}
     >
       <BaseTile
         tile={tileNumber}

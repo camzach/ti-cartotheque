@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-columns: 250px auto;
+  grid-template-columns: 250px auto 250px;
   height: 100%;
 `;
 const Content = styled.div`
@@ -45,6 +45,7 @@ export default function App() {
   const [ mapString, setMapString ] = React.useState<number[] | null>(null);
   const [ maps, setMaps ] = React.useState<Array<{ name: string, mapString: number[], playerCount: number, requiresPoK: boolean }>>([]);
   const [ loadingMaps, setLoadingMaps ] = React.useState(true);
+  const [ systemInfo, setSystemInfo ] = React.useState<any>(null);
 
   React.useEffect(() => {(async () => {
     const res = await fetch(`${window.location.origin}/maps`);
@@ -58,7 +59,7 @@ export default function App() {
     <Sidebar maps={maps} setMapString={setMapString} loadingMaps={loadingMaps} />
     <Content>
       {mapString && <>
-        <Map mapString={mapString} />
+        <Map mapString={mapString} onSystemInfo={setSystemInfo} />
         <div style={{ margin: '2em' }}>
           <label style={{ color: 'var(--primary-light)' }}>TTS String: </label>
           <input value={mapString.join(' ')} readOnly />
@@ -72,5 +73,16 @@ export default function App() {
         </div>
       </>}
     </Content>
+    {systemInfo &&
+    <div style={{ color: 'var(--primary-light)' }}>
+      <h1>Selected systems breakdown:</h1>
+      {Object.entries(systemInfo).map(([ key, value ]) =>
+        <>
+          <div>{key}:</div>
+          <div>{JSON.stringify(value)}</div>
+          <br/>
+        </>
+      )}
+    </div>}
   </Wrapper>);
 }
