@@ -38,7 +38,7 @@ type Props = {
   setMapString: (mapString: number[]) => void
 }
 
-export function Sidebar(props: Props) {
+export function MapSelector(props: Props) {
   const { maps, setMapString, loadingMaps } = props;
   const [ includePOK, setIncludePOK ] = React.useState({ label: 'PoK + Base', value: 2 });
   const [ playerCount, setPlayerCount ] = React.useState({ label: 'Any', value: 0 });

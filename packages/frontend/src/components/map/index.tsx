@@ -1,57 +1,24 @@
 import React from 'react';
 import { Tile } from './tile';
 import { getNeighborDirection, hexCoordToIndex, indexToHexCoord } from './utils';
-import data from './system-data.json';
 import { countBy, Dictionary } from 'lodash';
 
 const SIZE_CONST = 4;
 
 type Props = {
   mapString: number[]
-  onSystemInfo?: (info: {
-    resources: number
-    resourceBreakdown: {[res: number]: number}
-    influence: number
-    influenceBreakdown: {[inf: number]: number}
-    wormholes: Dictionary<number>
-    types: Dictionary<number>
-  } | null) => void
-}
-
-function getSystemInfo(tileIds: number[]) {
-  if (tileIds.length === 0) {
-    return null;
-  }
-
-  const systems = tileIds.map(id => data.all[id as any as keyof typeof data.all]);
-
-  const wormholes = countBy(systems.map(system => system.wormhole).filter(Boolean));
-  const types = countBy(systems.map(system => system.type));
-
-  const planets = systems.map(system => system.planets).flat();
-  const resources = planets.reduce((sum, planet) => planet.resources + sum, 0);
-  const resourceBreakdown = countBy(planets, 'resources');
-  const influence = planets.reduce((sum, planet) => planet.influence + sum, 0);
-  const influenceBreakdown = countBy(planets, 'influence');
-
-  return { resources, resourceBreakdown, influence, influenceBreakdown, wormholes, types };
+  selectedTiles: number[]
+  setSelectedTiles: React.Dispatch<React.SetStateAction<number[]>>
 }
 
 export function Map(props: Props) {
-  const {
-    onSystemInfo = () => {}
-  } = props;
+  const { selectedTiles, setSelectedTiles } = props;
+
   const mapString = [ ...props.mapString ];
   mapString[-1] = 18;
   const largestRing = Math.floor((Math.sqrt(12*(mapString.length-1)+9)-3)/6) + 1;
   const width = largestRing * 1.5 + 1;
   const height = largestRing * 2 + 1;
-
-  const [ selectedTiles, setSelectedTiles ] = React.useState<number[]>([]);
-  React.useEffect(() => {
-    const info = getSystemInfo(selectedTiles.map(idx => mapString[idx]));
-    onSystemInfo(info);
-  }, [ selectedTiles ])
 
   const handleTileClick = (coords: [number, number], meta: boolean) => {
     const selectedIndex = hexCoordToIndex(coords);
