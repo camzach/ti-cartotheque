@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Select } from '../select';
+import images from '../map/tiles';
 
 const MapButton = styled.div`
   cursor: pointer;
@@ -69,7 +70,7 @@ export function MapSelector(props: Props) {
         />
       </div>
       {loadingMaps ?
-        <SpinningImage src="https://keeganw.github.io/ti4//tiles/ST_18.png" />
+        <SpinningImage src={images[51]} />
       : maps
         .filter(map => (includePOK.value === 2 ||  map.requiresPoK === !!includePOK.value) && (playerCount.value === 0 || map.playerCount === playerCount.value))
         .map(map =>

@@ -16,8 +16,6 @@ export function Histogram(props: Props) {
     return [...acc, { x0: systemInfluence - 0.5, y0, x: systemInfluence + 0.5, y: y0 + 1, systemName }]
   }, [] as RectSeriesPoint[])
 
-  console.log(formattedData);
-
   return (
     <div>
       <h2>{title}</h2>

@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { hexCoordsToRectCoords } from './utils';
+import images from './tiles';
 
 function sharedTileStyle(props: { coords: [number, number], mapSize: [number, number]}) {
   const { mapSize, coords } = props;
@@ -17,7 +18,12 @@ function sharedTileStyle(props: { coords: [number, number], mapSize: [number, nu
 }
 
 const BaseTile = styled.div<{ tile: number, coords: [number, number], mapSize: [number, number] }>`
-  background: url(${({ tile }) => `https://keeganw.github.io/ti4//tiles/ST_${tile}.png`});
+  background: url(${({ tile }) => {
+    if (!images[tile]) {
+      console.log(tile);
+    }
+    return images[tile]
+  }});
   background-size: 100% 100%;
   ${sharedTileStyle}
 `;

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Tile } from './tile';
 import { getNeighborDirection, hexCoordToIndex, indexToHexCoord } from './utils';
-import { countBy, Dictionary } from 'lodash';
 
 const SIZE_CONST = 4;
 

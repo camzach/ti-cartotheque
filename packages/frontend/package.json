@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "file-loader": "^6.2.0",
     "lodash": "^4.17.21",
     "mongodb": "^3.6.9",
     "react": "^17.0.2",
@@ -22,11 +23,13 @@
   "devDependencies": {
     "@types/lodash": "^4.14.170",
     "@types/mongodb": "^3.6.17",
+    "@types/node": "^15.6.2",
     "@types/react": "^17.0.8",
     "@types/react-dom": "^17.0.5",
     "@types/react-select": "^4.0.15",
     "@types/react-vis": "^1.11.6",
     "@types/styled-components": "^5.1.9",
+    "@types/webpack-env": "^1.16.0",
     "css-loader": "^5.2.6",
     "html-webpack-plugin": "^5.3.1",
     "style-loader": "^2.0.0",

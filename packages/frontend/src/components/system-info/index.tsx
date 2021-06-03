@@ -1,5 +1,5 @@
 import React from 'react';
-import { countBy } from 'lodash';
+import countBy from 'lodash/countBy';
 import data from './system-data.json';
 import styled from 'styled-components';
 import { Histogram } from './charts';
