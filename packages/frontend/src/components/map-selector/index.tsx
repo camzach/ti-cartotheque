@@ -46,7 +46,8 @@ export function MapSelector(props: Props) {
 
   return (
     <div style={{
-      backgroundColor: 'var(--primary-light)'
+      backgroundColor: 'var(--primary-light)',
+      overflowY: 'scroll'
     }}>
       <div>
         <Select
