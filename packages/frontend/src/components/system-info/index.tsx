@@ -10,12 +10,12 @@ const Container = styled.div`
   overflow: scroll;
 `;
 
-function getSystemInfo(tileIds: number[]) {
+function getSystemInfo(tileIds: string[]) {
   if (tileIds.length === 0) {
     return null;
   }
 
-  const systems = tileIds.map(id => data.all[id as any as keyof typeof data.all]);
+  const systems = tileIds.map(id => data.all[id as any as keyof typeof data.all]).filter(Boolean);
 
   const wormholes = countBy(systems.map(system => system.wormhole).filter(Boolean));
   const types = countBy(systems.map(system => system.type));
@@ -30,13 +30,13 @@ function getSystemInfo(tileIds: number[]) {
 }
 
 type Props = {
-  selectedTiles: number[]
+  selectedSystems: string[] 
 }
 
 export function SystemInfo(props: Props) {
-  const { selectedTiles } = props;
-  const systemInfo = getSystemInfo(selectedTiles);
-  const systems = selectedTiles.map(id => data.all[id as any as keyof typeof data.all]);
+  const { selectedSystems } = props;
+  const systemInfo = getSystemInfo(selectedSystems);
+  const systems = selectedSystems.map(id => data.all[id as any as keyof typeof data.all]).filter(Boolean);
 
   return (
     <Container>

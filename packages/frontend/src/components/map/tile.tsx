@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { hexCoordsToRectCoords } from './utils';
 import images from './tiles';
 
-function sharedTileStyle(props: { coords: [number, number], mapSize: [number, number]}) {
-  const { mapSize, coords } = props;
+function sharedTileStyle(props: { tile: string, coords: [number, number], mapSize: [number, number]}) {
+  const { mapSize, coords, tile } = props;
   const [left, top] = hexCoordsToRectCoords(coords);
   return `
     height: calc(100% / ${mapSize[0]});
@@ -12,28 +12,26 @@ function sharedTileStyle(props: { coords: [number, number], mapSize: [number, nu
     position: absolute;
     top: calc(${top} * (100% / ${mapSize[0]}) + 50%);
     left: calc(${left} * (100% / ${mapSize[1]}) + 50%);
-    transform: translate(-50%, -50%);
+    --angle: ${(parseInt(tile.match(tileNameRegex)?.[2] ?? '0')) * 60}deg;
+    transform: translate(-50%, -50%) rotate(var(--angle));
     clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
   `;
 }
 
-const BaseTile = styled.div<{ tile: number, coords: [number, number], mapSize: [number, number] }>`
-  background: url(${({ tile }) => {
-    if (!images[tile]) {
-      console.log(tile);
-    }
-    return images[tile]
-  }});
+const tileNameRegex = /^([0-9]+[AB]?)([0-6])?$/;
+const BaseTile = styled.div<{ tile: string, coords: [number, number], mapSize: [number, number] }>`
+  background: url(${({ tile }) => images[tile.match(tileNameRegex)?.[1] ?? '']});
   background-size: 100% 100%;
   ${sharedTileStyle}
 `;
 const OutlineSVG = styled.svg`
   ${sharedTileStyle}
+  transform: translate(-50%, -50%);
 `;
 
 type Border = 'n' | 'ne' | 'se' | 's' | 'sw' | 'nw'
 
-const TileOutline = (props: { coords: [number, number], mapSize: [number, number], borders: Border[] }) => {
+const TileOutline = (props: { tile: string, coords: [number, number], mapSize: [number, number], borders: Border[] }) => {
   const { borders } = props;
   return (
     <OutlineSVG {...props} viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -53,7 +51,7 @@ const TileOutline = (props: { coords: [number, number], mapSize: [number, number
 };
 
 type Props = {
-  tileNumber: number
+  tileNumber: string
   borders?: Border[]
   coords: [number, number]
   mapSize: [number, number]
@@ -74,6 +72,7 @@ export function Tile(props: Props) {
   } = props;
 
   const handleClick = (e: React.MouseEvent) => {
+    console.log(tileNumber)
     onClick(coords, e.ctrlKey || e.metaKey);
   }
 
@@ -93,7 +92,7 @@ export function Tile(props: Props) {
         coords={coords}
         mapSize={mapSize} 
       />
-      <TileOutline borders={borders} coords={coords} mapSize={mapSize} />
+      <TileOutline tile={tileNumber} borders={borders} coords={coords} mapSize={mapSize} />
     </div>
   );
 }

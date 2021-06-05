@@ -34,9 +34,9 @@ const SpinningImage = styled.img`
 `;
 
 type Props = {
-  maps: Array<{ name: string, mapString: number[], requiresPoK: boolean, playerCount: number }>
+  maps: Array<{ name: string, mapString: string[], requiresPoK: boolean, playerCount: number }>
   loadingMaps: boolean
-  setMapString: (mapString: number[]) => void
+  setMapString: (mapString: string[]) => void
 }
 
 export function MapSelector(props: Props) {
@@ -47,7 +47,8 @@ export function MapSelector(props: Props) {
   return (
     <div style={{
       backgroundColor: 'var(--primary-light)',
-      overflowY: 'scroll'
+      overflowY: 'scroll',
+      height: '100%'
     }}>
       <div>
         <Select
@@ -74,8 +75,8 @@ export function MapSelector(props: Props) {
         <SpinningImage src={images[51]} />
       : maps
         .filter(map => (includePOK.value === 2 ||  map.requiresPoK === !!includePOK.value) && (playerCount.value === 0 || map.playerCount === playerCount.value))
-        .map(map =>
-          <MapButton onClick={() => setMapString(map.mapString)} key={map.name}>
+        .map((map, idx) =>
+          <MapButton onClick={() => setMapString(map.mapString)} key={idx}>
             {map.name}
           </MapButton>
       )}

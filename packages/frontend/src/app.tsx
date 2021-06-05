@@ -15,6 +15,7 @@ const Content = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
+  overflow: hidden;
 `;
 const CopyButton = styled.label`
   content: 'Copy';
@@ -44,8 +45,8 @@ const CopyButton = styled.label`
 `;
 
 export default function App() {
-  const [ mapString, setMapString ] = React.useState<number[] | null>(null);
-  const [ maps, setMaps ] = React.useState<Array<{ name: string, mapString: number[], playerCount: number, requiresPoK: boolean }>>([]);
+  const [ mapString, setMapString ] = React.useState<string[] | null>(null);
+  const [ maps, setMaps ] = React.useState<Array<{ name: string, mapString: string[], playerCount: number, requiresPoK: boolean }>>([]);
   const [ loadingMaps, setLoadingMaps ] = React.useState(true);
   const [ selectedTiles, setSelectedTiles ] = React.useState<number[]>([]);
 
@@ -56,9 +57,14 @@ export default function App() {
     setLoadingMaps(false);
   })()}, []);
 
+  const handleMapSelect = (map: string[]) => {
+    setMapString(map);
+    setSelectedTiles([]);
+  }
+
   return (
   <Wrapper>
-    <MapSelector maps={maps} setMapString={setMapString} loadingMaps={loadingMaps} />
+    <MapSelector maps={maps} setMapString={handleMapSelect} loadingMaps={loadingMaps} />
     <Content>
       {mapString && <>
         <Map mapString={mapString} selectedTiles={selectedTiles} setSelectedTiles={setSelectedTiles} />
@@ -75,6 +81,6 @@ export default function App() {
         </div>
       </>}
     </Content>
-    {mapString && <SystemInfo selectedTiles={selectedTiles.map(idx => idx === -1 ? 18 : mapString[idx])} />}
+    {mapString && <SystemInfo selectedSystems={selectedTiles.map(idx => idx === -1 ? '18' : mapString[idx])} />}
   </Wrapper>);
 }

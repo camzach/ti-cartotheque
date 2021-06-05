@@ -58,7 +58,7 @@ doc.loadInfo()
             name,
             playerCount: parseInt(playerCount),
             requiresPoK,
-            mapString: mapString.split(/\s*,\s*|\s+/).map((num: any) => parseInt(num))
+            mapString: mapString.split(/\s*,\s*|\s+/)
           }
         }).filter(Boolean));
       } catch {
