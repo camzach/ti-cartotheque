@@ -3,6 +3,7 @@ import { Map } from './components/map';
 import { MapSelector } from './components/map-selector';
 import { SystemInfo } from './components/system-info';
 import styled from 'styled-components';
+import DomToImage from 'dom-to-image';
 
 const Wrapper = styled.div`
   display: grid;
@@ -46,7 +47,7 @@ const CopyButton = styled.label`
   }
 `;
 
-export default function App() {
+export default function App() {  
   const [ mapString, setMapString ] = React.useState<string[] | null>(null);
   const [ maps, setMaps ] = React.useState<Array<{ name: string, mapString: string[], playerCount: number, requiresPoK: boolean }>>([]);
   const [ loadingMaps, setLoadingMaps ] = React.useState(true);
@@ -71,26 +72,38 @@ export default function App() {
   }
 
   return (
-  <Wrapper>
-    <MapSelector maps={maps} setMapString={handleMapSelect} loadingMaps={loadingMaps} />
-    <Content>
-      {mapString && <>
-        <div style={{ overflow: 'scroll', flex: 1, width: '100%' }}>
-          <Map mapString={normalizedMapString} selectedTiles={selectedTiles} setSelectedTiles={setSelectedTiles} />
-        </div>
-        <div style={{ marginTop: '2em', minHeight: '10%', flex: 0 }}>
-          <label style={{ color: 'var(--primary-light)' }}>TTS String: </label>
-          <input value={mapString.join(' ')} readOnly />
-          <CopyButton
-            onClick={() => {
-              navigator.clipboard.writeText(mapString.join(' '));
-            }}
-          >
-            Copy to clipboard
-          </CopyButton>
-        </div>
-      </>}
-    </Content>
-    {mapString && <SystemInfo selectedSystems={selectedTiles.map(idx => normalizedMapString[idx])} />}
-  </Wrapper>);
+    <Wrapper>
+      <MapSelector maps={maps} setMapString={handleMapSelect} loadingMaps={loadingMaps} />
+      <Content>
+        {mapString && <>
+          <div style={{ overflow: 'scroll', flex: 1, width: '100%' }}>
+            <Map mapString={normalizedMapString} selectedTiles={selectedTiles} setSelectedTiles={setSelectedTiles} />
+          </div>
+          <div style={{ marginTop: '2em', minHeight: '10%', flex: 0 }}>
+            <label style={{ color: 'var(--primary-light)' }}>TTS String: </label>
+            <input value={mapString.join(' ')} readOnly />
+            <CopyButton
+              onClick={() => {
+                navigator.clipboard.writeText(mapString.join(' '));
+              }}
+            >
+              Copy to clipboard
+            </CopyButton>
+            <CopyButton onClick={() => {
+                DomToImage.toPng(document.getElementById('map') as HTMLElement)
+                .then(function (dataUrl: any) {
+                    var link = document.createElement('a');
+                    link.download = 'my-image-name.jpeg';
+                    link.href = dataUrl;
+                    link.click();
+                });
+              }}>
+              Save image
+            </CopyButton>
+          </div>
+        </>}
+      </Content>
+      {mapString && <SystemInfo selectedSystems={selectedTiles.map(idx => normalizedMapString[idx])} />}
+    </Wrapper>
+  );
 }

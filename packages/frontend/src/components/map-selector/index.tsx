@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link, useRouteMatch } from 'react-router-dom';
 import { Select } from '../select';
 import images from '../map/tiles';
 
-const MapButton = styled.div`
+const MapButton = styled(Link)`
   cursor: pointer;
   color: var(--secondary-dark);
   &:hover {
@@ -11,6 +12,7 @@ const MapButton = styled.div`
     color: var(--secondary-light);
   }
   padding: 1em;
+  display: block;
 `;
 const SpinningImage = styled.img`
   animation-name: spin;
@@ -44,6 +46,15 @@ export function MapSelector(props: Props) {
   const [ includePOK, setIncludePOK ] = React.useState({ label: 'PoK + Base', value: 2 });
   const [ playerCount, setPlayerCount ] = React.useState({ label: 'Any', value: 0 });
 
+  const currentLocation = useRouteMatch('/:mapName');
+  // @ts-ignore
+  const loadedMapName = currentLocation?.params['mapName']
+  React.useEffect(() => {
+    if (loadedMapName) {
+      setMapString(maps.find(({ name }) => name === loadedMapName)?.mapString ?? []);
+    }
+  }, [ loadedMapName, maps ]);
+
   return (
     <div style={{
       backgroundColor: 'var(--primary-light)',
@@ -76,7 +87,7 @@ export function MapSelector(props: Props) {
       : maps
         .filter(map => (includePOK.value === 2 ||  map.requiresPoK === !!includePOK.value) && (playerCount.value === 0 || map.playerCount === playerCount.value))
         .map((map, idx) =>
-          <MapButton onClick={() => setMapString(map.mapString)} key={idx}>
+          <MapButton to={map.name} key={idx}>
             {map.name}
           </MapButton>
       )}
