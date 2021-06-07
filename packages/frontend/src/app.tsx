@@ -8,14 +8,16 @@ const Wrapper = styled.div`
   display: grid;
   grid-template-columns: 250px auto 500px;
   height: 100%;
+  overflow: hidden;
 `;
 const Content = styled.div`
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
   overflow: hidden;
+  margin: 2em;
 `;
 const CopyButton = styled.label`
   content: 'Copy';
@@ -50,6 +52,12 @@ export default function App() {
   const [ loadingMaps, setLoadingMaps ] = React.useState(true);
   const [ selectedTiles, setSelectedTiles ] = React.useState<number[]>([]);
 
+  const normalizedMapString = React.useMemo(() => {
+    const baseString = [...mapString ?? []];
+    baseString[-1] = /{.*}/.test(baseString[0]) ? baseString.shift()?.replace(/[{}]/g, '') as string : '18'
+    return baseString
+  }, [ mapString ]);
+
   React.useEffect(() => {(async () => {
     const res = await fetch(`${window.location.origin}/maps`);
     const json = await res.json();
@@ -67,8 +75,10 @@ export default function App() {
     <MapSelector maps={maps} setMapString={handleMapSelect} loadingMaps={loadingMaps} />
     <Content>
       {mapString && <>
-        <Map mapString={mapString} selectedTiles={selectedTiles} setSelectedTiles={setSelectedTiles} />
-        <div style={{ margin: '2em' }}>
+        <div style={{ overflow: 'scroll', flex: 1, width: '100%' }}>
+          <Map mapString={normalizedMapString} selectedTiles={selectedTiles} setSelectedTiles={setSelectedTiles} />
+        </div>
+        <div style={{ marginTop: '2em', minHeight: '10%', flex: 0 }}>
           <label style={{ color: 'var(--primary-light)' }}>TTS String: </label>
           <input value={mapString.join(' ')} readOnly />
           <CopyButton
@@ -81,6 +91,6 @@ export default function App() {
         </div>
       </>}
     </Content>
-    {mapString && <SystemInfo selectedSystems={selectedTiles.map(idx => idx === -1 ? '18' : mapString[idx])} />}
+    {mapString && <SystemInfo selectedSystems={selectedTiles.map(idx => normalizedMapString[idx])} />}
   </Wrapper>);
 }

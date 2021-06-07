@@ -30,7 +30,7 @@ function getSystemInfo(tileIds: string[]) {
 }
 
 type Props = {
-  selectedSystems: string[] 
+  selectedSystems: string[]
 }
 
 export function SystemInfo(props: Props) {
