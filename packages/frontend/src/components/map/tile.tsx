@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import { hexCoordsToRectCoords } from './utils';
 import images from './tiles';
 
-function sharedTileStyle(props: { coords: [number, number], mapSize: [number, number], rotation: number }) {
+const BaseTile = styled.img<{ coords: [number, number], mapSize: [number, number], rotation: number }>`${
+  (props) => {
   const { mapSize, coords, rotation } = props;
   const [left, top] = hexCoordsToRectCoords(coords);
   return `
@@ -15,22 +16,16 @@ function sharedTileStyle(props: { coords: [number, number], mapSize: [number, nu
     transform: translate(-50%, -50%) rotate(${rotation}deg);
     clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
   `;
-}
+}}`;
 
 const tileNameRegex = /^([0-9]+[ab]?)([0-6])?$/;
-const BaseTile = styled.img<{ coords: [number, number], mapSize: [number, number], rotation: number }>`
-  ${sharedTileStyle}
-`;
-const OutlineSVG = styled.svg`
-  ${sharedTileStyle}
-`;
 
 type Border = 'n' | 'ne' | 'se' | 's' | 'sw' | 'nw'
 
 const TileOutline = (props: { coords: [number, number], mapSize: [number, number], rotation: number, borders: Border[] }) => {
   const { borders } = props;
   return (
-    <OutlineSVG {...props} viewBox="0 0 100 100" preserveAspectRatio="none">
+    <BaseTile as={'svg'} {...props} viewBox="0 0 100 100" preserveAspectRatio="none">
       <defs>
         <path id="n" d="M 0 0 L 100 0"/>
         <path id="ne" d="M 50 -50 L 150 150"/>
@@ -42,7 +37,7 @@ const TileOutline = (props: { coords: [number, number], mapSize: [number, number
       {borders.map((dir) => 
         <use xlinkHref={`#${dir}`} stroke="var(--secondary-light)" strokeWidth="10px" fill="transparent" key={dir}/>
       )}
-    </OutlineSVG>
+    </BaseTile>
   );
 };
 
@@ -92,7 +87,7 @@ export function Tile(props: Props) {
         coords={coords}
         mapSize={mapSize} 
       />
-      <TileOutline rotation={rotation} borders={borders} coords={coords} mapSize={mapSize} />
+      <TileOutline rotation={0} borders={borders} coords={coords} mapSize={mapSize} />
     </div>
   );
 }
