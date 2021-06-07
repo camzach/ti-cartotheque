@@ -25,7 +25,7 @@ type Border = 'n' | 'ne' | 'se' | 's' | 'sw' | 'nw'
 const TileOutline = (props: { coords: [number, number], mapSize: [number, number], rotation: number, borders: Border[] }) => {
   const { borders } = props;
   return (
-    <BaseTile as={'svg'} {...props} viewBox="0 0 100 100" preserveAspectRatio="none">
+    <BaseTile as={'svg'} {...props} viewBox="0 0 100 100" preserveAspectRatio="none" style={{ pointerEvents: 'none' }}>
       <defs>
         <path id="n" d="M 0 0 L 100 0"/>
         <path id="ne" d="M 50 -50 L 150 150"/>
@@ -72,28 +72,28 @@ export function Tile(props: Props) {
     resolvedName = 'HOME';
   }
   if (!images[resolvedName]) {
+    console.log(_, name, maybeRotation, resolvedName);
     resolvedName = 'RED';
   }
   const rotation = (parseInt(maybeRotation) || 0) * 60;
 
   return (
-    <div
-      draggable
-      onClick={handleClick}
-      onDragStart={(e) => {
-        // Hack to hide drag image
-        e.dataTransfer.setDragImage(document.createElement('div'), 0, 0);
-        onDragStart(coords, e.ctrlKey || e.metaKey)
-      }}
-      onDragEnter={(e) => onDragEnter(coords, e.ctrlKey || e.metaKey)}
-    >
+    <>
       <BaseTile
         src={images[resolvedName]}
         rotation={rotation}
         coords={coords}
-        mapSize={mapSize} 
+        mapSize={mapSize}
+        draggable
+        onClick={handleClick}
+        onDragStart={(e) => {
+          // Hack to hide drag image
+          e.dataTransfer.setDragImage(document.createElement('div'), 0, 0);
+          onDragStart(coords, e.ctrlKey || e.metaKey)
+        }}
+        onDragEnter={(e) => onDragEnter(coords, e.ctrlKey || e.metaKey)}
       />
       <TileOutline rotation={0} borders={borders} coords={coords} mapSize={mapSize} />
-    </div>
+    </>
   );
 }

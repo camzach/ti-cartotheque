@@ -13,12 +13,9 @@ const Wrapper = styled.div`
 `;
 const Content = styled.div`
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  grid-template-rows: auto 5em;
   overflow: hidden;
-  margin: 2em;
 `;
 const CopyButton = styled.label`
   content: 'Copy';
@@ -55,7 +52,7 @@ export default function App() {
 
   const normalizedMapString = React.useMemo(() => {
     const baseString = [...mapString ?? []];
-    baseString[-1] = /{.*}/.test(baseString[0]) ? baseString.shift()?.replace(/[{}]/g, '') as string : '18'
+    baseString[-1] = /{.*}/.test(baseString[0]) ? baseString.shift()?.replace(/[{}]/g, '') as string : '18';
     return baseString
   }, [ mapString ]);
 
@@ -76,10 +73,10 @@ export default function App() {
       <MapSelector maps={maps} setMapString={handleMapSelect} loadingMaps={loadingMaps} />
       <Content>
         {mapString && <>
-          <div style={{ overflow: 'scroll', flex: 1, width: '100%' }}>
+          <div style={{ overflow: 'scroll', width: 'calc(100% - 4em)', margin: '2em' }}>
             <Map mapString={normalizedMapString} selectedTiles={selectedTiles} setSelectedTiles={setSelectedTiles} />
           </div>
-          <div style={{ marginTop: '2em', minHeight: '10%', flex: 0 }}>
+          <div style={{ margin: '2em' }}>
             <label style={{ color: 'var(--primary-light)' }}>TTS String: </label>
             <input value={mapString.join(' ')} readOnly />
             <CopyButton

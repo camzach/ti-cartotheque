@@ -17,7 +17,8 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|svg)$/i,
-          use: {
+        use: [
+          {
             loader: 'file-loader',
             options: {
               name: '[name]-[hash].[ext]',
@@ -25,7 +26,14 @@ module.exports = {
               outputPath: 'img',
               esModule: false
             }
+          },
+          {
+            loader: 'webpack-image-resize-loader',
+            options: {
+              width: 200
+            }
           }
+        ]
       }
     ],
   },

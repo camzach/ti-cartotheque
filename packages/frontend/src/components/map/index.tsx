@@ -1,8 +1,16 @@
 import React from 'react';
+import styled from 'styled-components';
 import { Tile } from './tile';
 import { getNeighborDirection, hexCoordToIndex, indexToHexCoord } from './utils';
 
-const SIZE_CONST = 4;
+const MapWrapper = styled.div<{ aspectRatio: number }>`
+  position: relative;
+  min-width: 50%;
+  margin: auto;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: ${({ aspectRatio }) => aspectRatio};
+`;
 
 type Props = {
   mapString: string[]
@@ -16,6 +24,7 @@ export function Map(props: Props) {
   const largestRing = Math.floor((Math.sqrt(12*(mapString.length-1)+9)-3)/6) + 1;
   const width = largestRing * 1.5 + 1;
   const height = largestRing * 2 + 1;
+  const aspectRatio = (2 * width) / (Math.sqrt(3) * height);
 
   const handleTileClick = (coords: [number, number], meta: boolean) => {
     const selectedIndex = hexCoordToIndex(coords);
@@ -67,13 +76,8 @@ export function Map(props: Props) {
     [];
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        height: `${SIZE_CONST * Math.sqrt(3) * height}em`,
-        width: `${SIZE_CONST * 2 * width}em`,
-        overflow: 'scroll'
-      }}
+    <MapWrapper
+      aspectRatio={aspectRatio}
       id={'map'}
     >
       {mapString[-1] !== '-1' && <Tile
@@ -105,6 +109,6 @@ export function Map(props: Props) {
           onDragEnter={handleTileDragEnter}
         />
       })}
-    </div>
+    </MapWrapper>
   );
 }
