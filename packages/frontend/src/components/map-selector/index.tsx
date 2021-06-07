@@ -45,6 +45,7 @@ export function MapSelector(props: Props) {
   const { maps, setMapString, loadingMaps } = props;
   const [ includePOK, setIncludePOK ] = React.useState({ label: 'PoK + Base', value: 2 });
   const [ playerCount, setPlayerCount ] = React.useState({ label: 'Any', value: 0 });
+  const [ searchTerm, setSearchTerm ] = React.useState('');
 
   const currentLocation = useRouteMatch('/:mapName');
   // @ts-ignore
@@ -66,6 +67,12 @@ export function MapSelector(props: Props) {
       height: '100%'
     }}>
       <div>
+        <input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ width: '100%', height: '2.5em' }}
+          placeholder={'Search...'}
+        />
         <Select
           options={[
             { label: 'PoK + Base', value: 2 },
@@ -89,7 +96,11 @@ export function MapSelector(props: Props) {
       {loadingMaps ?
         <SpinningImage src={images[51]} />
       : maps
-        .filter(map => (includePOK.value === 2 ||  map.requiresPoK === !!includePOK.value) && (playerCount.value === 0 || map.playerCount === playerCount.value))
+        .filter(map =>
+          (includePOK.value === 2 ||  map.requiresPoK === !!includePOK.value) &&
+          (playerCount.value === 0 || map.playerCount === playerCount.value) &&
+          map.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
         .map((map, idx) =>
           <MapButton to={map.name} key={idx}>
             {map.name}
