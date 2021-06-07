@@ -18,7 +18,7 @@ const BaseTile = styled.img<{ coords: [number, number], mapSize: [number, number
   `;
 }}`;
 
-const tileNameRegex = /^([0-9]+[ab]?)([0-6])?$/;
+const tileNameRegex = /^([0-9]+[AB]?)([0-6])?$/;
 
 type Border = 'n' | 'ne' | 'se' | 's' | 'sw' | 'nw'
 
@@ -67,7 +67,13 @@ export function Tile(props: Props) {
   }
 
   const [ _, name, maybeRotation ] = tileNumber.match(tileNameRegex) ?? [];
-  const resolvedName = name === '0' ? 'HOME' : name;
+  let resolvedName = name;
+  if (resolvedName === '0') {
+    resolvedName = 'HOME';
+  }
+  if (!images[resolvedName]) {
+    resolvedName = 'RED';
+  }
   const rotation = (parseInt(maybeRotation) || 0) * 60;
 
   return (
@@ -82,7 +88,7 @@ export function Tile(props: Props) {
       onDragEnter={(e) => onDragEnter(coords, e.ctrlKey || e.metaKey)}
     >
       <BaseTile
-        src={images[resolvedName] || images['RED']}
+        src={images[resolvedName]}
         rotation={rotation}
         coords={coords}
         mapSize={mapSize} 

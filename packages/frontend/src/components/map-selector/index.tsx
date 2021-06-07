@@ -53,7 +53,7 @@ export function MapSelector(props: Props) {
     if (loadedMapName) {
       setMapString(
         maps.find(({ name }) => name === loadedMapName)?.mapString
-          .map((tile) => tile.toLowerCase()) ??
+          .map((tile) => tile.toUpperCase()) ??
         []
       );
     }
