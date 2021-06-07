@@ -51,7 +51,11 @@ export function MapSelector(props: Props) {
   const loadedMapName = currentLocation?.params['mapName']
   React.useEffect(() => {
     if (loadedMapName) {
-      setMapString(maps.find(({ name }) => name === loadedMapName)?.mapString ?? []);
+      setMapString(
+        maps.find(({ name }) => name === loadedMapName)?.mapString
+          .map((tile) => tile.toLowerCase()) ??
+        []
+      );
     }
   }, [ loadedMapName, maps ]);
 
