@@ -68,13 +68,11 @@ export function Tile(props: Props) {
   } = props;
 
   const handleClick = (e: React.MouseEvent) => {
-    console.log(tileNumber)
     onClick(coords, e.ctrlKey || e.metaKey);
   }
 
   const [ _, name, maybeRotation ] = tileNumber.match(tileNameRegex) ?? [];
   const rotation = (parseInt(maybeRotation) || 0) * 60;
-  console.log(tileNumber, rotation, parseInt(maybeRotation));
 
   return (
     <div
