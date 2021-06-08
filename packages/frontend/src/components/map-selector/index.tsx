@@ -4,12 +4,15 @@ import { Link, useRouteMatch } from 'react-router-dom';
 import { Select } from '../select';
 import images from '../map/tiles';
 
-const MapButton = styled(Link)`
+const activeStyle = `
+  background-color: var(--secondary-dark);
+  color: var(--secondary-light);
+`
+const MapButton = styled(Link)<{ selected: boolean }>`
   cursor: pointer;
-  color: var(--secondary-dark);
+  ${({ selected }) => selected ? activeStyle : 'color: var(--secondary-dark);'}
   &:hover {
-    background-color: var(--secondary-dark);
-    color: var(--secondary-light);
+    ${activeStyle}
   }
   padding: 1em;
   display: block;
@@ -102,7 +105,7 @@ export function MapSelector(props: Props) {
           map.name.toLowerCase().includes(searchTerm.toLowerCase())
         )
         .map((map, idx) =>
-          <MapButton to={map.name} key={idx}>
+          <MapButton to={map.name} key={idx} selected={map.name === loadedMapName}>
             {map.name}
           </MapButton>
       )}
