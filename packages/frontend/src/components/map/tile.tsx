@@ -93,7 +93,7 @@ export function Tile(props: Props) {
         }}
         onDragEnter={(e) => onDragEnter(coords, e.ctrlKey || e.metaKey)}
       />
-      <TileOutline rotation={0} borders={borders} coords={coords} mapSize={mapSize} />
+      {borders.length > 1 && <TileOutline rotation={0} borders={borders} coords={coords} mapSize={mapSize} />}
     </>
   );
 }
