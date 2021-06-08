@@ -74,12 +74,9 @@ export function Map(props: Props) {
   const mecatolBorders = selectedTiles.includes(-1) ?
     (['n', 's', 'ne', 'nw', 'se', 'sw'] as const).filter((dir) => !mecatolSelectedNeighbors.includes(dir)) :
     [];
-
+  console.log(mapString);
   return (
-    <MapWrapper
-      aspectRatio={aspectRatio}
-      id={'map'}
-    >
+    <MapWrapper aspectRatio={aspectRatio}>
       {mapString[-1] !== '-1' && <Tile
         tileNumber={mapString[-1]}
         coords={[0, 0]}

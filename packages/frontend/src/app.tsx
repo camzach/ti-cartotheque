@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 import { Map } from './components/map';
 import { MapSelector } from './components/map-selector';
 import { SystemInfo } from './components/system-info';
 import styled from 'styled-components';
-import DomToImage from 'dom-to-image';
+import html2canvas from 'html2canvas';
 
 const Wrapper = styled.div`
   display: grid;
@@ -50,6 +50,8 @@ export default function App() {
   const [ loadingMaps, setLoadingMaps ] = React.useState(true);
   const [ selectedTiles, setSelectedTiles ] = React.useState<number[]>([]);
 
+  const mapRef = React.useRef<HTMLDivElement>(null);
+
   const normalizedMapString = React.useMemo(() => {
     if (!mapString?.length) {
       return null;
@@ -60,7 +62,7 @@ export default function App() {
   }, [ mapString ]);
 
   React.useEffect(() => {(async () => {
-    const res = await fetch(`${window.location.origin}/maps`);
+    const res = await fetch(`/maps`);
     const json = await res.json();
     setMaps(json);
     setLoadingMaps(false);
@@ -76,8 +78,8 @@ export default function App() {
       <MapSelector maps={maps} setMapString={handleMapSelect} loadingMaps={loadingMaps} />
       <Content>
         {mapString && normalizedMapString && <>
-          <div style={{ overflow: 'scroll', width: 'calc(100% - 4em)', margin: '2em' }}>
-            <Map mapString={normalizedMapString} selectedTiles={selectedTiles} setSelectedTiles={setSelectedTiles} />
+          <div style={{ overflow: 'scroll', width: 'calc(100% - 4em)', margin: '2em' }} ref={mapRef}>
+            <Map mapString={normalizedMapString} selectedTiles={selectedTiles} setSelectedTiles={setSelectedTiles}/>
           </div>
           <div style={{ margin: '2em' }}>
             <label style={{ color: 'var(--primary-light)' }}>TTS String: </label>
@@ -90,14 +92,18 @@ export default function App() {
               Copy to clipboard
             </CopyButton>
             <CopyButton onClick={() => {
-                DomToImage.toPng(document.getElementById('map') as HTMLElement)
-                .then(function (dataUrl: any) {
-                    var link = document.createElement('a');
-                    link.download = 'my-image-name.jpeg';
-                    link.href = dataUrl;
-                    link.click();
-                });
-              }}>
+              if (!mapRef.current) {
+                return;
+              }
+              html2canvas(mapRef.current, { logging: false, backgroundColor: null }).then(canvas => {
+                const dataUrl = canvas.toDataURL();
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = `${mapString.join(' ')}.png`
+                a.click();
+                a.remove();
+              });
+            }}>
               Save image
             </CopyButton>
           </div>
