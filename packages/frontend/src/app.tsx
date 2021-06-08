@@ -51,8 +51,11 @@ export default function App() {
   const [ selectedTiles, setSelectedTiles ] = React.useState<number[]>([]);
 
   const normalizedMapString = React.useMemo(() => {
+    if (!mapString?.length) {
+      return null;
+    }
     const baseString = [...mapString ?? []];
-    baseString[-1] = /{.*}/.test(baseString[0]) ? baseString.shift()?.replace(/[{}]/g, '') as string : '18';
+    baseString[-1] = /{.*}|18/.test(baseString[0]) ? baseString.shift()?.replace(/[{}]/g, '') as string : '18';
     return baseString
   }, [ mapString ]);
 
@@ -72,7 +75,7 @@ export default function App() {
     <Wrapper>
       <MapSelector maps={maps} setMapString={handleMapSelect} loadingMaps={loadingMaps} />
       <Content>
-        {mapString && <>
+        {mapString && normalizedMapString && <>
           <div style={{ overflow: 'scroll', width: 'calc(100% - 4em)', margin: '2em' }}>
             <Map mapString={normalizedMapString} selectedTiles={selectedTiles} setSelectedTiles={setSelectedTiles} />
           </div>
@@ -100,7 +103,7 @@ export default function App() {
           </div>
         </>}
       </Content>
-      {mapString && <SystemInfo selectedSystems={selectedTiles.map(idx => normalizedMapString[idx])} />}
+      {normalizedMapString && <SystemInfo selectedSystems={selectedTiles.map(idx => normalizedMapString[idx])} />}
     </Wrapper>
   );
 }
