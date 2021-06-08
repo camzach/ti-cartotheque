@@ -72,7 +72,6 @@ export function Tile(props: Props) {
     resolvedName = 'HOME';
   }
   if (!images[resolvedName]) {
-    console.log(_, name, maybeRotation, resolvedName);
     resolvedName = 'RED';
   }
   const rotation = (parseInt(maybeRotation) || 0) * 60;
@@ -93,7 +92,7 @@ export function Tile(props: Props) {
         }}
         onDragEnter={(e) => onDragEnter(coords, e.ctrlKey || e.metaKey)}
       />
-      {borders.length > 1 && <TileOutline rotation={0} borders={borders} coords={coords} mapSize={mapSize} />}
+      {borders.length > 0 && <TileOutline rotation={0} borders={borders} coords={coords} mapSize={mapSize} />}
     </>
   );
 }
