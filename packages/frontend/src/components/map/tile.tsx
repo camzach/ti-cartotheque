@@ -3,7 +3,11 @@ import styled from 'styled-components';
 import { hexCoordsToRectCoords } from './utils';
 import images from './tiles';
 
-const BaseTile = styled.img<{ coords: [number, number], mapSize: [number, number], rotation: number }>`${
+const BaseTile = styled.img<{
+  coords: [number, number],
+  mapSize: [number, number],
+  rotation?: number,
+}>`${
   (props) => {
   const { mapSize, coords, rotation } = props;
   const [left, top] = hexCoordsToRectCoords(coords);
@@ -13,7 +17,7 @@ const BaseTile = styled.img<{ coords: [number, number], mapSize: [number, number
     position: absolute;
     top: calc(${top} * (100% / ${mapSize[0]}) + 50%);
     left: calc(${left} * (100% / ${mapSize[1]}) + 50%);
-    transform: translate(-50%, -50%) rotate(${rotation}deg);
+    transform: translate(-50%, -50%)${rotation ? ` rotate(${rotation}deg)` : ''};
     clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
   `;
 }}`;
@@ -22,7 +26,7 @@ const tileNameRegex = /^([0-9]+[AB]?)([0-6])?$/;
 
 type Border = 'n' | 'ne' | 'se' | 's' | 'sw' | 'nw'
 
-const TileOutline = (props: { coords: [number, number], mapSize: [number, number], rotation: number, borders: Border[] }) => {
+const TileOutline = (props: React.ComponentProps<typeof BaseTile> & { borders: Border[] }) => {
   const { borders } = props;
   return (
     <BaseTile as={'svg'} {...props} viewBox="0 0 100 100" preserveAspectRatio="none" style={{ pointerEvents: 'none' }}>
@@ -43,6 +47,7 @@ const TileOutline = (props: { coords: [number, number], mapSize: [number, number
 
 type Props = {
   tileNumber: string
+  label?: string
   borders?: Border[]
   coords: [number, number]
   mapSize: [number, number]
@@ -59,7 +64,8 @@ export function Tile(props: Props) {
     onClick = () => {},
     onDragStart = () => {},
     onDragEnter = () => {},
-    tileNumber
+    tileNumber,
+    label
   } = props;
 
   const handleClick = (e: React.MouseEvent) => {
@@ -92,7 +98,23 @@ export function Tile(props: Props) {
         }}
         onDragEnter={(e) => onDragEnter(coords, e.ctrlKey || e.metaKey)}
       />
-      {borders.length > 0 && <TileOutline rotation={0} borders={borders} coords={coords} mapSize={mapSize} />}
+      {label && <BaseTile
+        as={'label'}
+        coords={coords}
+        mapSize={mapSize}
+        style={{
+          clipPath: 'unset',
+          height: 'auto',
+          width: 'auto',
+          backgroundColor: '#fed',
+          borderRadius: '25%',
+          padding: '.25em',
+          zIndex: 5
+        }}
+      >
+        {label}
+      </BaseTile>}
+      {borders.length > 0 && <TileOutline borders={borders} coords={coords} mapSize={mapSize} />}
     </>
   );
 }

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Select } from '../select';
 import images from '../map/tiles';
+import { Map } from '../../app';
 
 const activeStyle = `
   background-color: var(--secondary-dark);
@@ -39,13 +40,13 @@ const SpinningImage = styled.img`
 `;
 
 type Props = {
-  maps: Array<{ name: string, mapString: string[], requiresPoK: boolean, playerCount: number }>
+  maps: Map[]
   loadingMaps: boolean
-  setMapString: (mapString: string[]) => void
+  setSelectedMap: (mapString: Map | null) => void
 }
 
 export function MapSelector(props: Props) {
-  const { maps, setMapString, loadingMaps } = props;
+  const { maps, setSelectedMap, loadingMaps } = props;
   const [ includePOK, setIncludePOK ] = React.useState({ label: 'PoK + Base', value: 2 });
   const [ playerCount, setPlayerCount ] = React.useState({ label: 'Any', value: 0 });
   const [ searchTerm, setSearchTerm ] = React.useState('');
@@ -55,10 +56,8 @@ export function MapSelector(props: Props) {
   const loadedMapName = currentLocation?.params['mapName']
   React.useEffect(() => {
     if (loadedMapName) {
-      setMapString(
-        maps.find(({ name }) => name === loadedMapName)?.mapString
-          .map((tile) => tile.toUpperCase()) ??
-        []
+      setSelectedMap(
+        maps.find(({ name }) => name === loadedMapName) ?? null
       );
     }
   }, [ loadedMapName, maps ]);

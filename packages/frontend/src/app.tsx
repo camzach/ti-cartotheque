@@ -44,22 +44,30 @@ const CopyButton = styled.label`
   }
 `;
 
-export default function App() {  
-  const [ mapString, setMapString ] = React.useState<string[] | null>(null);
-  const [ maps, setMaps ] = React.useState<Array<{ name: string, mapString: string[], playerCount: number, requiresPoK: boolean }>>([]);
+export type Map = {
+  name: string,
+  mapString: string[],
+  sliceNames: string[],
+  playerCount: number,
+  requiresPoK: boolean
+}
+
+export default function App() {
+  const [ selectedMap, setSelectedMap ] = React.useState<Map | null>(null);
+  const [ maps, setMaps ] = React.useState<Map[]>([]);
   const [ loadingMaps, setLoadingMaps ] = React.useState(true);
   const [ selectedTiles, setSelectedTiles ] = React.useState<number[]>([]);
 
   const mapRef = React.useRef<HTMLDivElement>(null);
 
   const normalizedMapString = React.useMemo(() => {
-    if (!mapString?.length) {
+    if (!selectedMap?.mapString.length) {
       return null;
     }
-    const baseString = [...mapString ?? []];
+    const baseString = [...selectedMap.mapString];
     baseString[-1] = /{.*}|18/.test(baseString[0]) ? baseString.shift()?.replace(/[{}]/g, '') as string : '18';
     return baseString
-  }, [ mapString ]);
+  }, [ selectedMap ]);
 
   React.useEffect(() => {(async () => {
     const res = await fetch(`/maps`);
@@ -68,25 +76,25 @@ export default function App() {
     setLoadingMaps(false);
   })()}, []);
 
-  const handleMapSelect = (map: string[]) => {
-    setMapString(map);
+  const handleMapSelect = (map: Map | null) => {
+    setSelectedMap(map);
     setSelectedTiles([]);
   }
 
   return (
     <Wrapper>
-      <MapSelector maps={maps} setMapString={handleMapSelect} loadingMaps={loadingMaps} />
+      <MapSelector maps={maps} setSelectedMap={handleMapSelect} loadingMaps={loadingMaps} />
       <Content>
-        {mapString && normalizedMapString && <>
+        {selectedMap?.mapString && normalizedMapString && <>
           <div style={{ overflow: 'scroll', width: 'calc(100% - 4em)', margin: '2em' }} ref={mapRef}>
-            <Map mapString={normalizedMapString} selectedTiles={selectedTiles} setSelectedTiles={setSelectedTiles}/>
+            <Map mapString={normalizedMapString} sliceNames={selectedMap.sliceNames} selectedTiles={selectedTiles} setSelectedTiles={setSelectedTiles}/>
           </div>
           <div style={{ margin: '2em' }}>
             <label style={{ color: 'var(--primary-light)' }}>TTS String: </label>
-            <input value={mapString.join(' ')} readOnly />
+            <input value={selectedMap.mapString.join(' ')} readOnly />
             <CopyButton
               onClick={() => {
-                navigator.clipboard.writeText(mapString.join(' '));
+                navigator.clipboard.writeText(selectedMap.mapString.join(' '));
               }}
             >
               Copy to clipboard
@@ -99,7 +107,7 @@ export default function App() {
                 const dataUrl = canvas.toDataURL();
                 const a = document.createElement('a');
                 a.href = dataUrl;
-                a.download = `${mapString.join(' ')}.png`
+                a.download = `${selectedMap.mapString.join(' ')}.png`
                 a.click();
                 a.remove();
               });

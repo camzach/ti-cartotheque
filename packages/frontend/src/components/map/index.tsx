@@ -16,10 +16,11 @@ type Props = {
   mapString: string[]
   selectedTiles: number[]
   setSelectedTiles: React.Dispatch<React.SetStateAction<number[]>>
+  sliceNames?: string[]
 }
 
 export function Map(props: Props) {
-  const { selectedTiles, setSelectedTiles, mapString } = props;
+  const { selectedTiles, setSelectedTiles, mapString, sliceNames } = props;
 
   const largestRing = Math.floor((Math.sqrt(12*(mapString.length-1)+9)-3)/6) + 1;
   const width = largestRing * 1.5 + 1;
@@ -75,6 +76,8 @@ export function Map(props: Props) {
     (['n', 's', 'ne', 'nw', 'se', 'sw'] as const).filter((dir) => !mecatolSelectedNeighbors.includes(dir)) :
     [];
 
+  let sliceIndex = 0;
+
   return (
     <MapWrapper aspectRatio={aspectRatio}>
       {mapString[-1] !== '-1' && <Tile
@@ -98,6 +101,8 @@ export function Map(props: Props) {
         return <Tile
           key={idx}
           tileNumber={tileNumber}
+          label={tileNumber === '0' ? sliceNames?.[sliceIndex++] : undefined}
+          // label={tileNumber}
           mapSize={[height, width]}
           coords={coords}
           borders={borders}
