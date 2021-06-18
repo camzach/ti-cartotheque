@@ -48,7 +48,8 @@ doc.loadInfo()
             "Map name": name,
             "Player count": playerCount,
             "Attributes": attributes,
-            "Map string": mapString
+            "Map string": mapString,
+            "Slice names": sliceNames
           } = row;
           const requiresPoK = attributes.split(', ').includes('PoK required');
           if (!name) {
@@ -58,7 +59,8 @@ doc.loadInfo()
             name,
             playerCount: parseInt(playerCount),
             requiresPoK,
-            mapString: mapString.trim().split(/\s*,\s*|\s+/)
+            mapString: mapString.trim().split(/\s*,\s*|\s+/),
+            sliceNames: sliceNames.trim().split(/[,;]/)
           }
         }).filter(Boolean));
       } catch {
