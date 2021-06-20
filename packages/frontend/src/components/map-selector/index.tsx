@@ -49,6 +49,7 @@ export function MapSelector(props: Props) {
   const { maps, setSelectedMap, loadingMaps } = props;
   const [ includePOK, setIncludePOK ] = React.useState({ label: 'PoK + Base', value: 2 });
   const [ playerCount, setPlayerCount ] = React.useState({ label: 'Any', value: 0 });
+  const [ difficulty, setDifficulty ] = React.useState({ label: 'Any', value: 'Any' });
   const [ searchTerm, setSearchTerm ] = React.useState('');
 
   const currentLocation = useRouteMatch('/:mapName');
@@ -68,13 +69,14 @@ export function MapSelector(props: Props) {
       overflowY: 'scroll',
       height: '100%'
     }}>
-      <div>
+      <div style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-light)' }}>
         <input
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ width: '100%', height: '2.5em' }}
+          style={{ width: '100%', height: '2.5em', boxSizing: 'border-box' }}
           placeholder={'Search...'}
         />
+        <label>Include PoK content?</label>
         <Select
           options={[
             { label: 'PoK + Base', value: 2 },
@@ -82,32 +84,44 @@ export function MapSelector(props: Props) {
             { label: 'PoK only', value: 1 }
           ]}
           value={includePOK}
-          onChange={(val) => setIncludePOK(val as typeof includePOK)}
-          isClearable={false}
-        />
+          onChange={(value) => value ? setIncludePOK(value as typeof includePOK) : setIncludePOK({ label: 'PoK + Base', value: 2 })}
+          isClearable={true}
+          />
+        <label>Player count</label>
         <Select
-          onChange={(value) => setPlayerCount(value as typeof playerCount)}
+          onChange={(value) => value ? setPlayerCount(value as typeof playerCount) : setPlayerCount({ label: 'Any', value: 0 })}
           value={playerCount}
           options={[
             { label: 'Any', value: 0 },
             ...[3,4,5,6,7,8].map(val => ({ label: val, value: val }))
           ]}
-          isClearable={false}
+          isClearable={true}
+          />
+        <label>Map difficulty</label>
+        <Select
+          onChange={(value) => value ? setDifficulty(value as typeof difficulty) : setDifficulty({ 'label': 'Any', value: 'Any' })}
+          value={difficulty}
+          options={['Beginner', 'Intermediate', 'Advanced', 'Expert'].map(val => ({ label: val, value: val }))}
+          isClearable={true}
         />
       </div>
-      {loadingMaps ?
-        <SpinningImage src={images[51]} />
-      : maps
-        .filter(map =>
-          (includePOK.value === 2 ||  map.requiresPoK === !!includePOK.value) &&
-          (playerCount.value === 0 || map.playerCount === playerCount.value) &&
-          map.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-        .map((map, idx) =>
-          <MapButton to={map.name} key={idx} selected={map.name === loadedMapName}>
-            {map.name}
-          </MapButton>
-      )}
+      <div style={{ margin: '.5em 0'}}>
+        {loadingMaps ?
+          <SpinningImage src={images[51]} />
+        : maps
+          .filter(map =>
+            (includePOK.value === 2 ||  map.requiresPoK === !!includePOK.value) &&
+            (playerCount.value === 0 || map.playerCount === playerCount.value) &&
+            (difficulty.value === 'Any' || map.difficulty === difficulty.value) &&
+            map.name.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((map, idx) =>
+            <MapButton to={map.name} key={idx} selected={map.name === loadedMapName}>
+              {map.name}
+            </MapButton>
+        )}
+      </div>
     </div>
   );
 }

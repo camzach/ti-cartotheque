@@ -107,7 +107,7 @@ export function Tile(props: Props) {
           height: 'auto',
           width: 'auto',
           backgroundColor: '#fed',
-          borderRadius: '25%',
+          borderRadius: '.25em',
           padding: '.25em',
           zIndex: 5
         }}

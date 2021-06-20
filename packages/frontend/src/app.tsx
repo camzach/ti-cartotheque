@@ -1,13 +1,13 @@
 import React from 'react';
 import { Map } from './components/map';
 import { MapSelector } from './components/map-selector';
-import { SystemInfo } from './components/system-info';
+import { MapInfo } from './components/map-info';
 import styled from 'styled-components';
 import html2canvas from 'html2canvas';
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-columns: 250px auto 500px;
+  grid-template-columns: 15% auto 33%;
   height: 100%;
   overflow: hidden;
 `;
@@ -49,7 +49,9 @@ export type Map = {
   mapString: string[],
   sliceNames: string[],
   playerCount: number,
-  requiresPoK: boolean
+  requiresPoK: boolean,
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced',
+  comments: string
 }
 
 export default function App() {
@@ -117,7 +119,12 @@ export default function App() {
           </div>
         </>}
       </Content>
-      {normalizedMapString && <SystemInfo selectedSystems={selectedTiles.map(idx => normalizedMapString[idx])} />}
+      {selectedMap && normalizedMapString &&
+        <MapInfo
+          map={selectedMap}
+          selectedSystems={selectedTiles.map(idx => normalizedMapString[idx])}
+        />
+      }
     </Wrapper>
   );
 }

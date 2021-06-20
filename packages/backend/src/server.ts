@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import dotenv from 'dotenv';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { uniq } from 'lodash';
 
 dotenv.config();
 
@@ -49,7 +50,9 @@ doc.loadInfo()
             "Player count": playerCount,
             "Attributes": attributes,
             "Map string": mapString,
-            "Slice names": sliceNames
+            "Slice names": sliceNames,
+            "Difficulty": difficulty,
+            "Comments": comments
           } = row;
           const requiresPoK = attributes.split(', ').includes('PoK required');
           if (!name) {
@@ -60,7 +63,9 @@ doc.loadInfo()
             playerCount: parseInt(playerCount),
             requiresPoK,
             mapString: mapString.trim().split(/\s*,\s*|\s+/),
-            sliceNames: sliceNames.trim().split(/[,;]/)
+            sliceNames: sliceNames.trim().split(/[,;]/),
+            difficulty,
+            comments
           }
         }).filter(Boolean));
       } catch {
