@@ -17,10 +17,11 @@ type Props = {
   selectedTiles: number[]
   setSelectedTiles: React.Dispatch<React.SetStateAction<number[]>>
   sliceNames?: string[]
+  showTileNumbers: boolean
 }
 
 export function Map(props: Props) {
-  const { selectedTiles, setSelectedTiles, mapString, sliceNames } = props;
+  const { selectedTiles, setSelectedTiles, mapString, sliceNames, showTileNumbers } = props;
 
   const largestRing = Math.floor((Math.sqrt(12*(mapString.length-1)+9)-3)/6) + 1;
   const width = largestRing * 1.5 + 1;
@@ -82,6 +83,7 @@ export function Map(props: Props) {
     <MapWrapper aspectRatio={aspectRatio}>
       {mapString[-1] !== '-1' && <Tile
         tileNumber={mapString[-1]}
+        label={showTileNumbers ? mapString[-1] : undefined}
         coords={[0, 0]}
         mapSize={[height, width]}
         onClick={handleTileClick}
@@ -98,11 +100,17 @@ export function Map(props: Props) {
         const borders = selectedTiles.includes(idx) ? 
           (['n', 's', 'ne', 'nw', 'se', 'sw'] as const).filter((dir) => !selectedNeighbors.includes(dir)) :
           [];
+        let label: string | undefined;
+        if (showTileNumbers) {
+          label = tileNumber;
+        }
+        if (tileNumber === '0') {
+          label = sliceNames?.[sliceIndex++]
+        }
         return <Tile
           key={idx}
           tileNumber={tileNumber}
-          label={tileNumber === '0' ? sliceNames?.[sliceIndex++] : undefined}
-          // label={tileNumber}
+          label={label}
           mapSize={[height, width]}
           coords={coords}
           borders={borders}

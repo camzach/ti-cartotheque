@@ -1,5 +1,5 @@
 import React from 'react';
-import countBy from 'lodash/countBy';
+import { countBy, lowerCase, upperFirst } from 'lodash';
 import data from './system-data.json';
 import { Histogram } from './charts';
 
@@ -22,6 +22,21 @@ function getSystemInfo(tileIds: string[]) {
   return { resources, resourceBreakdown, influence, influenceBreakdown, wormholes, types };
 }
 
+type ValueOf<T> = T[keyof T];
+function getSystemName(system: ValueOf<typeof data['all']>) {
+  if (system.planets.length > 0) {
+    return system.planets.map(planet => planet.name).join(' / ');
+  }
+  if ('anomaly' in system && system.anomaly) {
+    return lowerCase(system.anomaly).split(' ').map((word) => upperFirst(word)).join(' ')
+     + (system.wormhole ? ` / ${upperFirst(system.wormhole)}` : '');
+  }
+  if (system.wormhole) {
+    return upperFirst(system.wormhole);
+  }
+  return 'Empty Space';
+}
+
 type Props = {
   selectedSystems: string[]
 }
@@ -37,14 +52,14 @@ export function SystemInfo(props: Props) {
         <h1>Selected systems breakdown:</h1>
         <Histogram
           data={systems.map(system => [
-            system.planets.map(planet => planet.name).join(' / '),
+            getSystemName(system),
             system.planets.map(planet => planet.influence).reduce((total, inf) => total + inf, 0)
           ])}
           title={'Influence Breakdown'}
         />
         <Histogram
           data={systems.map(system => [
-            system.planets.map(planet => planet.name).join(' / '),
+            getSystemName(system),
             system.planets.map(planet => planet.resources).reduce((total, res) => total + res, 0)
           ])}
           title={'Resource Breakdown'}

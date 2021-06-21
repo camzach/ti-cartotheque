@@ -19,6 +19,7 @@ const BaseTile = styled.img<{
     left: calc(${left} * (100% / ${mapSize[1]}) + 50%);
     transform: translate(-50%, -50%)${rotation ? ` rotate(${rotation}deg)` : ''};
     clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    cursor: pointer;
   `;
 }}`;
 

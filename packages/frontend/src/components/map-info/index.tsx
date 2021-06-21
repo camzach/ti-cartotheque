@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Map } from '../../app';
 import { SystemInfo } from './system-info';
 import styled from 'styled-components';

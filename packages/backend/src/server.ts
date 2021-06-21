@@ -54,7 +54,9 @@ doc.loadInfo()
             "Difficulty": difficulty,
             "Comments": comments
           } = row;
-          const requiresPoK = attributes.split(', ').includes('PoK required');
+          const splitAttributes = attributes.split(', ');
+          const requiresPoK = splitAttributes.includes('PoK required');
+          const ttsOnly = splitAttributes.includes('TTS only (contains duplicate tiles or extra hyperlanes)');
           if (!name) {
             return false;
           }
@@ -65,7 +67,8 @@ doc.loadInfo()
             mapString: mapString.trim().split(/\s*,\s*|\s+/),
             sliceNames: sliceNames.trim().split(/[,;]/),
             difficulty,
-            comments
+            comments,
+            ttsOnly
           }
         }).filter(Boolean));
       } catch {

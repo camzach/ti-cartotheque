@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Select } from '../select';
-import images from '../map/tiles';
+import images from '../map-display/map/tiles';
 import { Map } from '../../app';
 
 const activeStyle = `

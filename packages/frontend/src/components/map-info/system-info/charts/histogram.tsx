@@ -33,7 +33,7 @@ export function Histogram(props: Props) {
     <div>
       <h2>{title}</h2>
       <ChartWrapper>
-        <FlexibleXYPlot>
+        <FlexibleXYPlot xDomain={[-0.5, 6.5]}>
           <HorizontalGridLines />
           <VerticalRectSeries
             style={{
