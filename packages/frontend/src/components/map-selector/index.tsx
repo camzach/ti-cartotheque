@@ -39,6 +39,37 @@ const SpinningImage = styled.img`
   }
 `;
 
+const options = [
+  {
+    label: 'Components',
+    options: [{ label: 'Requires PoK', value: 'COMP-POK' }, { label: 'TTS Only', value: 'COMP-TTS' }]
+  },
+  {
+    label: 'Player Count',
+    options: [
+      ...[3,4,5,6,7,8].map(val => ({ label: val, value: `PC-${val}` }))
+    ]
+  },
+  {
+    label: 'Difficulty',
+    options: ['Beginner', 'Intermediate', 'Advanced', 'Expert'].map(val => ({ label: val, value: `DIFF-${val}` }))
+  }
+];
+
+function mapToFilters(map: Map) {
+  const filters = [
+    `PC-${map.playerCount}`,
+    `DIFF-${map.difficulty}`
+  ];
+  if (map.requiresPoK) {
+    filters.push('COMP-POK');
+  }
+  if (map.ttsOnly) {
+    filters.push('COMP-TTS');
+  }
+  return filters;
+}
+
 type Props = {
   maps: Map[]
   loadingMaps: boolean
@@ -47,11 +78,9 @@ type Props = {
 
 export function MapSelector(props: Props) {
   const { maps, setSelectedMap, loadingMaps } = props;
-  const [ includePOK, setIncludePOK ] = React.useState({ label: 'PoK + Base', value: 2 });
-  const [ playerCount, setPlayerCount ] = React.useState({ label: 'Any', value: 0 });
-  const [ difficulty, setDifficulty ] = React.useState({ label: 'Any', value: 'Any' });
+  const [ includeFilters, setIncludeFilters ] = React.useState<Array<{ label: string, value: string }>>([]);
+  const [ excludeFilters, setExcludeFilters ] = React.useState<Array<{ label: string, value: string }>>([]);
   const [ searchTerm, setSearchTerm ] = React.useState('');
-
   const currentLocation = useRouteMatch('/:mapName');
   // @ts-ignore
   const loadedMapName = currentLocation?.params['mapName']
@@ -76,33 +105,25 @@ export function MapSelector(props: Props) {
           style={{ width: '100%', height: '2.5em', boxSizing: 'border-box' }}
           placeholder={'Search...'}
         />
-        <label>Include PoK content?</label>
+        <label>Include</label>
         <Select
-          options={[
-            { label: 'PoK + Base', value: 2 },
-            { label: 'Base only', value: 0 },
-            { label: 'PoK only', value: 1 }
-          ]}
-          value={includePOK}
-          onChange={(value) => value ? setIncludePOK(value as typeof includePOK) : setIncludePOK({ label: 'PoK + Base', value: 2 })}
+          options={options}
+          value={includeFilters}
+          // @ts-ignore: This won't be null
+          onChange={setIncludeFilters}
           isClearable={true}
-          />
-        <label>Player count</label>
+          isMulti
+          closeMenuOnSelect={false}
+        />
+        <label>Exclude</label>
         <Select
-          onChange={(value) => value ? setPlayerCount(value as typeof playerCount) : setPlayerCount({ label: 'Any', value: 0 })}
-          value={playerCount}
-          options={[
-            { label: 'Any', value: 0 },
-            ...[3,4,5,6,7,8].map(val => ({ label: val, value: val }))
-          ]}
+          options={options}
+          value={excludeFilters}
+          // @ts-ignore: This won't be null
+          onChange={setExcludeFilters}
           isClearable={true}
-          />
-        <label>Map difficulty</label>
-        <Select
-          onChange={(value) => value ? setDifficulty(value as typeof difficulty) : setDifficulty({ 'label': 'Any', value: 'Any' })}
-          value={difficulty}
-          options={['Beginner', 'Intermediate', 'Advanced', 'Expert'].map(val => ({ label: val, value: val }))}
-          isClearable={true}
+          isMulti
+          closeMenuOnSelect={false}
         />
       </div>
       <div style={{ margin: '.5em 0'}}>
@@ -110,9 +131,8 @@ export function MapSelector(props: Props) {
           <SpinningImage src={images[51]} />
         : maps
           .filter(map =>
-            (includePOK.value === 2 ||  map.requiresPoK === !!includePOK.value) &&
-            (playerCount.value === 0 || map.playerCount === playerCount.value) &&
-            (difficulty.value === 'Any' || map.difficulty === difficulty.value) &&
+            includeFilters?.every(filter => mapToFilters(map).includes(filter.value)) &&
+            !excludeFilters?.some(filter => mapToFilters(map).includes(filter.value)) &&
             map.name.toLowerCase().includes(searchTerm.toLowerCase())
           )
           .sort((a, b) => a.name.localeCompare(b.name))

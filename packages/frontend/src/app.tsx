@@ -51,7 +51,8 @@ export type Map = {
   playerCount: number,
   requiresPoK: boolean,
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced',
-  comments: string
+  comments: string,
+  ttsOnly: boolean
 }
 
 export default function App() {
