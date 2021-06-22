@@ -64,7 +64,7 @@ export function MapDisplay(props: Props) {
 
   return (
     <Content>
-      <div style={{ overflow: 'scroll', width: 'calc(100% - 4em)', margin: '2em' }} ref={mapRef}>
+      <div style={{ overflow: 'hidden', width: 'calc(100% - 4em)', margin: '2em' }} ref={mapRef}>
         <Map
           mapString={normalizedMapString}
           sliceNames={showSliceNames ? map.sliceNames : undefined}

@@ -6,7 +6,7 @@ import styled from 'styled-components';
 const Container = styled.div`
   color: var(--primary-dark);
   background-color: var(--primary-light);
-  overflow: scroll;
+  overflow: auto;
   padding: 1em;
 `;
 
