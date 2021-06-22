@@ -5,7 +5,6 @@ import { getNeighborDirection, hexCoordToIndex, indexToHexCoord } from './utils'
 
 const MapWrapper = styled.div<{ aspectRatio: number }>`
   position: relative;
-  min-width: 50%;
   margin: auto;
   max-width: 100%;
   max-height: 100%;
