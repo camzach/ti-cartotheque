@@ -120,7 +120,6 @@ export function Tile(props: Props) {
               borderRadius: ".25em",
               padding: ".25em",
               zIndex: 5,
-              "--angle": `${rotation}deg`,
               "--x": x,
               "--y": y,
               "--mapW": mapSize[0],
