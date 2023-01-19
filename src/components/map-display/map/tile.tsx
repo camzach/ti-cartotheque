@@ -79,10 +79,7 @@ export function Tile(props: Props) {
 
   const [_, name, maybeRotation] = tileNumber.match(tileNameRegex) ?? [];
   let resolvedName = name;
-  if (resolvedName === "0") {
-    resolvedName = "HOME";
-  }
-  resolvedName ??= "RED";
+  resolvedName ??= "39_Back";
   const rotation = (parseInt(maybeRotation) || 0) * 60;
   const [x, y] = hexCoordsToRectCoords(coords);
 
@@ -97,7 +94,7 @@ export function Tile(props: Props) {
           "--mapW": mapSize[0],
           "--mapH": mapSize[1],
         }}
-        src={`tiles/${resolvedName}.png`}
+        src={`https://keeganw.github.io/ti4/tiles/ST_${resolvedName}.png`}
         draggable
         onClick={handleClick}
         onDragStart={(e) => {
