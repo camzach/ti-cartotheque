@@ -1,0 +1,6 @@
+.container {
+  color: var(--primary-dark);
+  background-color: var(--primary-light);
+  overflow: auto;
+  padding: 1em;
+}

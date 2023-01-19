@@ -1,0 +1,6 @@
+.wrapper {
+  display: grid;
+  grid-template-columns: 15% auto 33%;
+  height: 100%;
+  overflow: hidden;
+}

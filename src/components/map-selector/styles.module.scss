@@ -1,0 +1,33 @@
+.active {
+  background-color: var(--secondary-dark);
+  color: var(--secondary-light);
+}
+.map-button {
+  cursor: pointer;
+  &:hover {
+    background-color: var(--secondary-dark);
+    color: var(--secondary-light);
+  }
+  padding: 1em;
+  display: block;
+}
+.spinning-image {
+  animation-name: spin;
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  transform-origin: center;
+  width: 100%;
+  margin-top: 2em;
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg) scale(20%);
+    }
+    50% {
+      transform: rotate(360deg) scale(100%);
+    }
+    100% {
+      transform: rotate(720deg) scale(20%);
+    }
+  }
+}

@@ -1,0 +1,10 @@
+.base-tile {
+  height: calc(100% / var(--mapW));
+  width: calc(100% / var(--mapH));
+  position: absolute;
+  top: calc(var(--y) * (100% / var(--mapW)) + 50%);
+  left: calc(var(--x) * (100% / var(--mapH)) + 50%);
+  transform: translate(-50%, -50%) rotate(var(--angle, 0deg));
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  cursor: pointer;
+}

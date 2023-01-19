@@ -1,0 +1,34 @@
+.content {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 20%;
+  overflow: hidden;
+}
+.alerting-button {
+  cursor: pointer;
+  position: relative;
+  background-color: var(--secondary);
+  border: 2px solid var(--secondary-light);
+  padding: 0.25em;
+  &:active {
+    background-color: var(--secondary-light);
+    border: 2px solid var(--secondary);
+  }
+  ::before {
+    display: block;
+    position: absolute;
+    top: -100%;
+    height: 1.5em;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background-color: var(--secondary);
+    content: var(--alert);
+    width: max-content;
+    opacity: 0;
+    transition: opacity .5s ease .5s;
+  }
+  :active::before {
+    opacity: 1;
+    transition: opacity 0s ease 0s;
+  }
+}
