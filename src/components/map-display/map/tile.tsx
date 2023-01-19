@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import styles from "./styles.module.scss";
 import { hexCoordsToRectCoords } from "./utils";
 
@@ -18,13 +18,15 @@ const TileOutline = (
   return (
     <svg
       className={styles["base-tile"]}
-      style={{
-        "--x": x,
-        "--y": y,
-        "--mapW": mapSize[0],
-        "--mapH": mapSize[1],
-        pointerEvents: "none",
-      }}
+      style={
+        {
+          "--x": x,
+          "--y": y,
+          "--mapW": mapSize[0],
+          "--mapH": mapSize[1],
+          pointerEvents: "none",
+        } as CSSProperties
+      }
       {...props}
       viewBox="0 0 100 100"
       preserveAspectRatio="none"
@@ -87,13 +89,15 @@ export function Tile(props: Props) {
     <>
       <img
         className={styles["base-tile"]}
-        style={{
-          "--angle": `${rotation}deg`,
-          "--x": x,
-          "--y": y,
-          "--mapW": mapSize[0],
-          "--mapH": mapSize[1],
-        }}
+        style={
+          {
+            "--angle": `${rotation}deg`,
+            "--x": x,
+            "--y": y,
+            "--mapW": mapSize[0],
+            "--mapH": mapSize[1],
+          } as CSSProperties
+        }
         src={`https://keeganw.github.io/ti4/tiles/ST_${resolvedName}.png`}
         draggable
         onClick={handleClick}
@@ -107,20 +111,22 @@ export function Tile(props: Props) {
       {label && (
         <label
           className={styles["base-tile"]}
-          style={{
-            clipPath: "unset",
-            height: "auto",
-            width: "auto",
-            backgroundColor: "#fed",
-            borderRadius: ".25em",
-            padding: ".25em",
-            zIndex: 5,
-            "--angle": `${rotation}deg`,
-            "--x": x,
-            "--y": y,
-            "--mapW": mapSize[0],
-            "--mapH": mapSize[1],
-          }}
+          style={
+            {
+              clipPath: "unset",
+              height: "auto",
+              width: "auto",
+              backgroundColor: "#fed",
+              borderRadius: ".25em",
+              padding: ".25em",
+              zIndex: 5,
+              "--angle": `${rotation}deg`,
+              "--x": x,
+              "--y": y,
+              "--mapW": mapSize[0],
+              "--mapH": mapSize[1],
+            } as CSSProperties
+          }
         >
           {label}
         </label>

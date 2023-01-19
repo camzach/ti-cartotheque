@@ -1,5 +1,5 @@
 import html2canvas from "html2canvas";
-import React from "react";
+import React, { CSSProperties } from "react";
 import styles from "./styles.module.scss";
 import { Map as MapType } from "../../app";
 import { Map } from "./map";
@@ -54,7 +54,7 @@ export function MapDisplay(props: Props) {
         <input value={map.mapString.join(" ")} readOnly />
         <label
           className={styles["alerting-button"]}
-          style={{ "--alert": "'Copied!'" }}
+          style={{ "--alert": "'Copied!'" } as CSSProperties}
           onClick={() => {
             navigator.clipboard.writeText(map.mapString.join(","));
           }}
@@ -63,7 +63,7 @@ export function MapDisplay(props: Props) {
         </label>
         <label
           className={styles["alerting-button"]}
-          style={{ "--alert": "'Saving map...'" }}
+          style={{ "--alert": "'Saving map...'" } as CSSProperties}
           onClick={() => {
             if (!mapRef.current) {
               return;
