@@ -1,92 +1,73 @@
-import React from "react";
-import { countBy, lowerCase, upperFirst } from "lodash";
-import data from "./system-data.json";
-import { Histogram } from "./charts";
+import React from 'react';
+import { countBy, lowerCase, upperFirst } from 'lodash';
+import { systems } from './system-data';
+import { Histogram } from './charts';
 
-function getSystemInfo(tileIds: string[]) {
+function getSelectionStats(tileIds: string[]) {
   if (tileIds.length === 0) {
     return null;
   }
 
-  const systems = tileIds
-    .map((id) => data.all[id as any as keyof typeof data.all])
-    .filter(Boolean);
+  const systemData = tileIds.map(id => systems[id]).filter(Boolean);
 
-  const wormholes = countBy(
-    systems.map((system) => system.wormhole).filter(Boolean)
-  );
-  const types = countBy(systems.map((system) => system.type));
-
-  const planets = systems.map((system) => system.planets).flat();
+  const wormholes = countBy(systemData.flatMap((system) => 'wormhole' in system ? [ system.wormhole ] : []));
+  const planets = systemData.flatMap(system => 'planets' in system ? system.planets ?? [] : []);
   const resources = planets.reduce((sum, planet) => planet.resources + sum, 0);
-  const resourceBreakdown = countBy(planets, "resources");
+  const resourceBreakdown = countBy(planets, 'resources');
   const influence = planets.reduce((sum, planet) => planet.influence + sum, 0);
-  const influenceBreakdown = countBy(planets, "influence");
+  const influenceBreakdown = countBy(planets, 'influence');
 
-  return {
-    resources,
-    resourceBreakdown,
-    influence,
-    influenceBreakdown,
-    wormholes,
-    types,
-  };
+  return { resources, resourceBreakdown, influence, influenceBreakdown, wormholes };
 }
 
+const upperFirstCase = (val: string) => lowerCase(val).split(' ').map(upperFirst).join(' ');
+
 type ValueOf<T> = T[keyof T];
-function getSystemName(system: ValueOf<(typeof data)["all"]>) {
-  if (system.planets.length > 0) {
-    return system.planets.map((planet) => planet.name).join(" / ");
+function getSystemName(system: ValueOf<typeof systems>) {
+  console.log(system);
+  if ('planets' in system && system.planets) {
+    return system.planets.map(planet => planet.name).join(' / ');
   }
-  if ("anomaly" in system && system.anomaly) {
-    return (
-      lowerCase(system.anomaly)
-        .split(" ")
-        .map((word) => upperFirst(word))
-        .join(" ") +
-      (system.wormhole ? ` / ${upperFirst(system.wormhole)}` : "")
-    );
+  if ('anomaly' in system && system.anomaly) {
+    return `${upperFirstCase(system.anomaly)}${('wormhole' in system && system.wormhole ? ` / ${upperFirst(system.wormhole)}` : '')}`;
   }
-  if (system.wormhole) {
+  if ('wormhole' in system && system.wormhole) {
     return upperFirst(system.wormhole);
   }
-  return "Empty Space";
+  return 'Empty Space';
 }
 
 type Props = {
-  selectedSystems: string[];
-};
+  selectedSystems: string[]
+}
+
+type NoHyperlanes<T> = T extends { hyperlanes: any } ? never : T;
 
 export function SystemInfo(props: Props) {
   const { selectedSystems } = props;
-  const systemInfo = getSystemInfo(selectedSystems);
-  const systems = selectedSystems
-    .map((id) => data.all[id as any as keyof typeof data.all])
-    .filter(Boolean);
+  const selectionStats = getSelectionStats(selectedSystems);
+  const systemData = selectedSystems.map(id => systems[id])
+    .filter((system): system is NoHyperlanes<typeof system> => !!system && !('hyperlanes' in system));
 
-  return systemInfo ? (
-    <>
-      <h1>Selected systems breakdown:</h1>
-      <Histogram
-        data={systems.map((system) => [
-          getSystemName(system),
-          system.planets
-            .map((planet) => planet.influence)
-            .reduce((total, inf) => total + inf, 0),
-        ])}
-        title={"Influence Breakdown"}
-      />
-      <Histogram
-        data={systems.map((system) => [
-          getSystemName(system),
-          system.planets
-            .map((planet) => planet.resources)
-            .reduce((total, res) => total + res, 0),
-        ])}
-        title={"Resource Breakdown"}
-      />
-    </>
-  ) : (
-    <>'Select some systems to view statistics...'</>
+  return (
+    selectionStats ?
+      <>
+        <h1>Selected systems breakdown:</h1>
+        <Histogram
+          data={systemData.map(system => [
+            getSystemName(system),
+            (system.planets ?? []).map(planet => planet.influence).reduce((total, inf) => total + inf, 0)
+          ])}
+          title={'Influence Breakdown'}
+        />
+        <Histogram
+          data={systemData.map(system => [
+            getSystemName(system),
+            ('planets' in system ? system.planets ?? [] : []).map(planet => planet.resources).reduce((total, res) => total + res, 0)
+          ])}
+          title={'Resource Breakdown'}
+        />
+      </> :
+      <>'Select some systems to view statistics...'</>
   );
 }
