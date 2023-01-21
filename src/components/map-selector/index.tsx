@@ -65,7 +65,17 @@ export function MapSelector(props: Props) {
     Array<{ label: string; value: string }>
   >([]);
   const [searchTerm, setSearchTerm] = React.useState("");
+  const modalRef = React.useRef<HTMLDialogElement>(null);
   const loadedMapName = decodeURIComponent(location.hash.substring(1));
+
+  const showModal = () => {
+    if (!modalRef.current) return;
+    modalRef.current.showModal();
+  };
+  const hideModal = () => {
+    if (!modalRef.current) return;
+    modalRef.current.close();
+  };
 
   React.useEffect(() => {
     (async () => {
@@ -185,6 +195,48 @@ export function MapSelector(props: Props) {
               </span>
             ))
         )}
+      </div>
+      <div
+        style={{
+          position: "sticky",
+          bottom: 0,
+          padding: "1em",
+          backgroundColor: "var(--primary)",
+          color: "var(--secondary-dark)",
+        }}
+      >
+        Have a map you want to contribute? Fill out the submissions form{" "}
+        <a
+          href={"https://forms.gle/BVUzTrvj44nr152M8"}
+          onClick={(e) => {
+            e.preventDefault();
+            showModal();
+          }}
+        >
+          here
+        </a>
+        .
+        <dialog ref={modalRef} style={{ padding: 0 }}>
+          <div
+            style={{
+              width: "100%",
+              backgroundColor: "var(--primary-dark)",
+              direction: "rtl",
+            }}
+          >
+            <button onClick={hideModal}>Close</button>
+          </div>
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLSfd82LFZz3fXrMFRvnizVy71XJB34bK5ndLIyZVrKibAbTfYA/viewform?embedded=true"
+            width="640"
+            height="1045"
+            frameBorder="0"
+            marginHeight={0}
+            marginWidth={0}
+          >
+            Loading…
+          </iframe>
+        </dialog>
       </div>
     </div>
   );
