@@ -1,10 +1,10 @@
 import React from "react";
-import { Map } from "../../app";
+import { Map, Milty } from "../../app";
 import { SystemInfo } from "./system-info";
 import styles from "./styles.module.css";
 
 type Props = {
-  map: Map;
+  map: Map | Milty;
   selectedSystems: string[];
 };
 
@@ -17,8 +17,12 @@ export function MapInfo(props: Props) {
       ) : (
         <>
           <h1>{map.name}</h1>
-          <h2>Player count</h2>
-          {map.playerCount}
+          {map.type === "prebuilt" && (
+            <>
+              <h2>Player count</h2>
+              {map.playerCount}
+            </>
+          )}
           {map.comments && (
             <>
               <h2>Cartographer's comments:</h2>

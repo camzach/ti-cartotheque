@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./styles.module.scss";
 import { Select } from "../select";
-import { Map } from "../../app";
+import { Map, Milty } from "../../app";
 
 const options = [
   {
@@ -26,8 +26,11 @@ const options = [
   },
 ];
 
-function mapToFilters(map: Map) {
-  const filters = [`PC-${map.playerCount}`, `DIFF-${map.difficulty}`];
+function mapToFilters(map: Map | Milty) {
+  const filters = [`DIFF-${map.difficulty}`];
+  if ("playerCount" in map) {
+    filters.push(`PC-${map.playerCount}`);
+  }
   if (map.requiresPoK) {
     filters.push("COMP-POK");
   }
@@ -37,14 +40,24 @@ function mapToFilters(map: Map) {
   return filters;
 }
 
+function miltyStringToStandardString(map: string[]) {
+  const cycle = [5, 0, 3, 6, 1];
+  const newArray = [];
+  map.forEach((tile, idx) => (newArray[cycle[idx]] = tile));
+  newArray[4] = "0";
+  newArray[0] = `{${newArray[0]}}`;
+  newArray[2] = "-1";
+  return newArray;
+}
+
 type Props = {
-  maps: Map[];
-  loadingMaps: boolean;
-  setSelectedMap: (mapString: Map | null) => void;
+  onMapSelect: (selection: Map | Milty | null) => void;
 };
 
 export function MapSelector(props: Props) {
-  const { maps, setSelectedMap, loadingMaps } = props;
+  const [maps, setMaps] = React.useState<(Map | Milty)[]>([]);
+  const [loadingMaps, setLoadingMaps] = React.useState(true);
+  const { onMapSelect } = props;
   const [includeFilters, setIncludeFilters] = React.useState<
     Array<{ label: string; value: string }>
   >([]);
@@ -53,9 +66,51 @@ export function MapSelector(props: Props) {
   >([]);
   const [searchTerm, setSearchTerm] = React.useState("");
   const loadedMapName = decodeURIComponent(location.hash.substring(1));
+
+  React.useEffect(() => {
+    (async () => {
+      const url = `https://docs.google.com/spreadsheets/d/1gtDCFBaDOZVNk-U6A8WOZTeDbJAEMxodBE5pL8rjWxI/gviz/tq?tqx=out:json&tq&gid=262335736`;
+      const response = await fetch(url);
+      const raw = await response.text();
+      const json = JSON.parse(raw.substring(47).slice(0, -2));
+      const rows = json.table.rows
+        .filter((r: { c: unknown[] }) =>
+          r.c.slice(0, -1).some((el) => el !== null)
+        )
+        .map((row: { c: Array<{ f: unknown; v: unknown } | null> }) => {
+          const base = {
+            name: row.c[2]!.v as string,
+            sliceNames: (row.c[7]?.v as string)?.split("\n"),
+            requiresPoK:
+              (row.c[9]?.v as string)?.includes("Requires PoK") ?? false,
+            difficulty: row.c[8]!.v as Map["difficulty"],
+            comments: (row.c[10]?.v as string) ?? "",
+            ttsOnly: (row.c[9]?.v as string)?.includes("TTS only") ?? false,
+          };
+          return row.c[3]?.v === "Prebuilt Map"
+            ? ({
+                ...base,
+                type: "prebuilt",
+                mapString: (row.c[4]!.v as string).split(" ") as string[],
+                playerCount: row.c[5]!.v as number,
+              } satisfies Map)
+            : ({
+                ...base,
+                sliceStrings: (row.c[6]!.v as string)
+                  .split("\n")
+                  .map((line) => line.split(" "))
+                  .map(miltyStringToStandardString),
+                type: "milty",
+              } satisfies Milty);
+        });
+      setMaps(rows);
+      setLoadingMaps(false);
+    })();
+  }, []);
+
   React.useEffect(() => {
     if (loadedMapName) {
-      setSelectedMap(maps.find(({ name }) => name === loadedMapName) ?? null);
+      onMapSelect(maps.find(({ name }) => name === loadedMapName) ?? null);
     }
   }, [loadedMapName, maps]);
 
@@ -123,7 +178,7 @@ export function MapSelector(props: Props) {
                 key={idx}
                 onClick={() => {
                   location.hash = map.name;
-                  setSelectedMap(map);
+                  onMapSelect(map);
                 }}
               >
                 {map.name}

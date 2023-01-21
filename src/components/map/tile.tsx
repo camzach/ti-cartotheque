@@ -25,6 +25,7 @@ const TileOutline = (
           "--mapW": mapSize[0],
           "--mapH": mapSize[1],
           pointerEvents: "none",
+          position: "absolute",
         } as CSSProperties
       }
       {...props}
@@ -62,7 +63,6 @@ type Props = {
   onDragStart?: (coords: [number, number], metaKey: boolean) => void;
   onDragEnter?: (coords: [number, number], metaKey: boolean) => void;
 };
-
 export function Tile(props: Props) {
   const {
     borders = [],
@@ -120,6 +120,7 @@ export function Tile(props: Props) {
               borderRadius: ".25em",
               padding: ".25em",
               zIndex: 5,
+              position: "absolute",
               "--x": x,
               "--y": y,
               "--mapW": mapSize[0],
