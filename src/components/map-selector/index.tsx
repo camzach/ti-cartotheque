@@ -5,6 +5,13 @@ import { Map, Milty } from "../../app";
 
 const options = [
   {
+    label: "Type",
+    options: [
+      { label: "Prebuilt Map", value: "TYPE-PREMADE" },
+      { label: "Milty Draft Pool", value: "TYPE-MILTY" },
+    ],
+  },
+  {
     label: "Components",
     options: [
       { label: "Requires PoK", value: "COMP-POK" },
@@ -30,6 +37,9 @@ function mapToFilters(map: Map | Milty) {
   const filters = [`DIFF-${map.difficulty}`];
   if ("playerCount" in map) {
     filters.push(`PC-${map.playerCount}`);
+    filters.push("TYPE-PREMADE");
+  } else {
+    filters.push("TYPE-MILTY");
   }
   if (map.requiresPoK) {
     filters.push("COMP-POK");
@@ -39,6 +49,8 @@ function mapToFilters(map: Map | Milty) {
   }
   return filters;
 }
+
+window.mapToFilters = mapToFilters;
 
 function miltyStringToStandardString(map: string[]) {
   const cycle = [5, 0, 3, 6, 1];
@@ -128,17 +140,13 @@ export function MapSelector(props: Props) {
     <div
       style={{
         backgroundColor: "var(--primary-light)",
-        overflowY: "scroll",
         height: "100%",
+        overflow: "hidden",
+        display: "grid",
+        gridTemplateRows: "auto 1fr auto",
       }}
     >
-      <div
-        style={{
-          position: "sticky",
-          top: 0,
-          backgroundColor: "var(--primary-light)",
-        }}
-      >
+      <div>
         <input
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -166,7 +174,7 @@ export function MapSelector(props: Props) {
           closeMenuOnSelect={false}
         />
       </div>
-      <div style={{ margin: ".5em 0" }}>
+      <div style={{ margin: ".5em 0", overflowY: "scroll", flex: 1 }}>
         {loadingMaps ? (
           <img className={styles["spinning-image"]} src={"tiles/51.png"} />
         ) : (
@@ -198,8 +206,6 @@ export function MapSelector(props: Props) {
       </div>
       <div
         style={{
-          position: "sticky",
-          bottom: 0,
           padding: "1em",
           backgroundColor: "var(--primary)",
           color: "var(--secondary-dark)",
