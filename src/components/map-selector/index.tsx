@@ -50,18 +50,6 @@ function mapToFilters(map: Map | Milty) {
   return filters;
 }
 
-window.mapToFilters = mapToFilters;
-
-function miltyStringToStandardString(map: string[]) {
-  const cycle = [5, 0, 3, 6, 1];
-  const newArray = [];
-  map.forEach((tile, idx) => (newArray[cycle[idx]] = tile));
-  newArray[4] = "0";
-  newArray[0] = `{${newArray[0]}}`;
-  newArray[2] = "-1";
-  return newArray;
-}
-
 type Props = {
   onMapSelect: (selection: Map | Milty | null) => void;
 };
@@ -120,8 +108,7 @@ export function MapSelector(props: Props) {
                 ...base,
                 sliceStrings: (row.c[6]!.v as string)
                   .split("\n")
-                  .map((line) => line.split(" "))
-                  .map(miltyStringToStandardString),
+                  .map((line) => line.split(" ")),
                 type: "milty",
               } satisfies Milty);
         });

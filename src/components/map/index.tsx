@@ -89,7 +89,6 @@ export function Map(props: Props) {
     <div
       className={styles["map-wrapper"]}
       style={{ aspectRatio: aspectRatio.toString() }}
-      key={mapString.join("")}
     >
       {mapString[-1] !== "-1" && (
         <Tile
@@ -125,7 +124,7 @@ export function Map(props: Props) {
         }
         return (
           <Tile
-            key={idx}
+            key={`${tileNumber}-${idx}-${borders.join("")}`}
             tileNumber={tileNumber}
             label={label}
             mapSize={[height, width]}

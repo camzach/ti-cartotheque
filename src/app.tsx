@@ -1,8 +1,8 @@
 import React from "react";
 import { MapSelector } from "./components/map-selector";
-import { MapInfo } from "./components/map-info";
 import styles from "./styles.module.css";
 import { MapDisplay } from "./components/map-display";
+import MiltyGrid from "./components/milty-grid";
 
 type BaseMap = {
   name: string;
@@ -28,25 +28,18 @@ export default function App() {
   const [selectedMap, setSelectedMap] = React.useState<Map | Milty | null>(
     null
   );
-  const [selectedSystems, setSelectedSystems] = React.useState<string[]>([]);
-
-  const handleMapSelect = (map: Map | Milty | null) => {
-    setSelectedMap(map);
-    setSelectedSystems([]);
-  };
 
   return (
     <div className={styles.wrapper}>
-      <MapSelector onMapSelect={handleMapSelect} />
-      {selectedMap && (
-        <>
-          <MapDisplay
-            map={selectedMap}
-            setSelectedSystems={setSelectedSystems}
-          />
-          <MapInfo map={selectedMap} selectedSystems={selectedSystems} />
-        </>
-      )}
+      <MapSelector onMapSelect={setSelectedMap} />
+      {(() => {
+        switch (selectedMap?.type) {
+          case "prebuilt":
+            return <MapDisplay map={selectedMap} key={selectedMap.name} />;
+          case "milty":
+            return <MiltyGrid pool={selectedMap} key={selectedMap.name} />;
+        }
+      })()}
     </div>
   );
 }
