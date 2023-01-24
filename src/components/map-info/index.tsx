@@ -17,6 +17,7 @@ export function MapInfo(props: Props) {
       ) : (
         <>
           <h1>{map.name}</h1>
+          {map.author}
           {map.type === "prebuilt" && (
             <>
               <h2>Player count</h2>

@@ -6,6 +6,7 @@ import MiltyGrid from "./components/milty-grid";
 
 type BaseMap = {
   name: string;
+  author: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   sliceNames?: string[];
   requiresPoK: boolean;
