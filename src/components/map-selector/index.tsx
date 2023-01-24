@@ -1,16 +1,10 @@
 import React from "react";
+import cx from "classnames";
 import styles from "./styles.module.scss";
 import { Select } from "../select";
 import { Map, Milty } from "../../app";
 
 const options = [
-  {
-    label: "Type",
-    options: [
-      { label: "Prebuilt Map", value: "TYPE-PREMADE" },
-      { label: "Milty Draft Pool", value: "TYPE-MILTY" },
-    ],
-  },
   {
     label: "Components",
     options: [
@@ -65,6 +59,7 @@ export function MapSelector(props: Props) {
     Array<{ label: string; value: string }>
   >([]);
   const [searchTerm, setSearchTerm] = React.useState("");
+  const [tab, setTab] = React.useState<(Map | Milty)["type"]>("prebuilt");
   const modalRef = React.useRef<HTMLDialogElement>(null);
   const loadedMapName = decodeURIComponent(location.hash.substring(1));
 
@@ -90,6 +85,7 @@ export function MapSelector(props: Props) {
         .map((row: { c: Array<{ f: unknown; v: unknown } | null> }) => {
           const base = {
             name: row.c[2]!.v as string,
+            author: row.c[1]?.v as string,
             sliceNames: (row.c[7]?.v as string)?.split("\n"),
             requiresPoK:
               (row.c[9]?.v as string)?.includes("Requires PoK") ?? false,
@@ -129,18 +125,35 @@ export function MapSelector(props: Props) {
         backgroundColor: "var(--primary-light)",
         height: "100%",
         overflow: "hidden",
-        display: "grid",
-        gridTemplateRows: "auto 1fr auto",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <div>
+      <div style={{ margin: "5px", marginBottom: 0 }}>
+        <span
+          className={cx([
+            styles.tab,
+            tab === "prebuilt" && styles["active-tab"],
+          ])}
+          onClick={() => setTab("prebuilt")}
+        >
+          Maps
+        </span>
+        <span
+          className={cx([styles.tab, tab === "milty" && styles["active-tab"]])}
+          onClick={() => setTab("milty")}
+        >
+          Milty Pools
+        </span>
+      </div>
+      <div style={{ flex: 0, paddingInline: "5px" }}>
         <input
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ width: "100%", height: "2.5em", boxSizing: "border-box" }}
           placeholder={"Search..."}
         />
-        <label>Include</label>
+        <label>Include tags:</label>
         <Select
           options={options}
           value={includeFilters}
@@ -149,8 +162,9 @@ export function MapSelector(props: Props) {
           isClearable={true}
           isMulti
           closeMenuOnSelect={false}
+          placeholder="Include tags"
         />
-        <label>Exclude</label>
+        <label>Exclude tags:</label>
         <Select
           options={options}
           value={excludeFilters}
@@ -159,11 +173,15 @@ export function MapSelector(props: Props) {
           isClearable={true}
           isMulti
           closeMenuOnSelect={false}
+          placeholder="Exclude tags"
         />
       </div>
-      <div style={{ margin: ".5em 0", overflowY: "scroll", flex: 1 }}>
+      <div style={{ margin: ".5em 0", overflowY: "auto", flex: 1 }}>
         {loadingMaps ? (
-          <img className={styles["spinning-image"]} src={"tiles/51.png"} />
+          <img
+            className={styles["spinning-image"]}
+            src={"https://keeganw.github.io/ti4/tiles/ST_18.png"}
+          />
         ) : (
           maps
             .filter(
@@ -174,7 +192,8 @@ export function MapSelector(props: Props) {
                 !excludeFilters?.some((filter) =>
                   mapToFilters(map).includes(filter.value)
                 ) &&
-                map.name.toLowerCase().includes(searchTerm.toLowerCase())
+                map.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+                map.type === tab
             )
             .sort((a, b) => a.name.localeCompare(b.name))
             .map((map, idx) => (

@@ -31,3 +31,14 @@
     }
   }
 }
+
+.tab {
+  border: 2px solid black;
+  border-bottom: none;
+  border-radius: 5px 5px 0 0;
+  padding-inline: 5px;
+}
+
+.active-tab {
+  background-color: #fed;
+}

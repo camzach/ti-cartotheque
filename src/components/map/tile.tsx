@@ -28,7 +28,6 @@ const TileOutline = (
           position: "absolute",
         } as CSSProperties
       }
-      {...props}
       viewBox="0 0 100 100"
       preserveAspectRatio="none"
     >
