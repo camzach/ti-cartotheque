@@ -27,6 +27,8 @@ const options = [
   },
 ];
 
+const localStorageKey = "lastTab";
+
 function mapToFilters(map: Map | Milty) {
   const filters = [`DIFF-${map.difficulty}`];
   if ("playerCount" in map) {
@@ -59,7 +61,14 @@ export function MapSelector(props: Props) {
     Array<{ label: string; value: string }>
   >([]);
   const [searchTerm, setSearchTerm] = React.useState("");
-  const [tab, setTab] = React.useState<(Map | Milty)["type"]>("prebuilt");
+  const [tab, setTab] = React.useState<(Map | Milty)["type"]>(() => {
+    const lastType = localStorage.getItem(localStorageKey) ?? "prebuilt";
+    console.log("resuming", lastType);
+    return ["prebuilt", "milty"].includes(lastType)
+      ? (lastType as (Map | Milty)["type"])
+      : "prebuilt";
+  });
+  console.log(tab);
   const modalRef = React.useRef<HTMLDialogElement>(null);
   const loadedMapName = decodeURIComponent(location.hash.substring(1));
 
@@ -70,6 +79,10 @@ export function MapSelector(props: Props) {
   const hideModal = () => {
     if (!modalRef.current) return;
     modalRef.current.close();
+  };
+  const handleTabChange = (newTab: typeof tab) => () => {
+    setTab(newTab);
+    localStorage.setItem(localStorageKey, newTab);
   };
 
   React.useEffect(() => {
@@ -135,13 +148,13 @@ export function MapSelector(props: Props) {
             styles.tab,
             tab === "prebuilt" && styles["active-tab"],
           ])}
-          onClick={() => setTab("prebuilt")}
+          onClick={handleTabChange("prebuilt")}
         >
           Maps
         </span>
         <span
           className={cx([styles.tab, tab === "milty" && styles["active-tab"]])}
-          onClick={() => setTab("milty")}
+          onClick={handleTabChange("milty")}
         >
           Milty Pools
         </span>
